@@ -106,80 +106,69 @@ local freezeActive = false
 local disappearActive = false
 local dragonActive = false
 
-local function isDragonCanelloni(obj)
+local function hasDragonName(obj)
+	local checkNames = {"dragon canelloni", "dragon", "canelloni"}
 	local name = string.lower(obj.Name)
-	if string.find(name, "dragon canelloni") then
-		return true
-	end
-	local parent = obj.Parent
-	if parent and parent:IsA("Model") then
-		if string.find(string.lower(parent.Name), "dragon canelloni") then
+	for _, v in pairs(checkNames) do
+		if string.find(name, v) then
 			return true
 		end
 	end
-	for _, child in pairs(obj:GetChildren()) do
-		if child:IsA("BillboardGui") or child:IsA("TextLabel") or child:IsA("SurfaceGui") then
-			local text = ""
-			if child:IsA("TextLabel") then
-				text = child.Text
-			elseif child:IsA("SurfaceGui") and child:FindFirstChildWhichIsA("TextLabel") then
-				text = child:FindFirstChildWhichIsA("TextLabel").Text
-			elseif child:IsA("BillboardGui") and child:FindFirstChildWhichIsA("TextLabel") then
-				text = child:FindFirstChildWhichIsA("TextLabel").Text
-			end
-			if string.find(string.lower(text), "dragon canelloni") then
-				return true
+	if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+		for _, child in pairs(obj:GetChildren()) do
+			if child:IsA("BillboardGui") or child:IsA("SurfaceGui") then
+				for _, label in pairs(child:GetDescendants()) do
+					if label:IsA("TextLabel") then
+						local text = string.lower(label.Text)
+						if string.find(text, "dragon") or string.find(text, "canelloni") then
+							return true
+						end
+					end
+				end
 			end
 		end
 	end
 	return false
 end
 
-local function hideBrainrot(v)
-	for _, obj in pairs(v:GetDescendants()) do
-		if obj:IsA("TextLabel") or obj:IsA("TextButton") then
-			local text = string.lower(obj.Text)
-			if string.find(text, "brainrot") or string.find(text, "skibidi") or string.find(text, "rizz") then
-				obj.Visible = false
-			end
-		end
-		if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-			local name = string.lower(obj.Name)
-			if string.find(name, "brainrot") or string.find(name, "skibidi") then
-				obj.Visible = false
-			end
-		end
-		if obj:IsA("Frame") then
-			local name = string.lower(obj.Name)
-			if string.find(name, "brainrot") or string.find(name, "skibidi") then
-				obj.Visible = false
-			end
-		end
+local function setAllTransparency(obj, value)
+	if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+		obj.LocalTransparencyModifier = value
+		obj.Transparency = value
+		obj.CastShadow = value < 1
+	elseif obj:IsA("Decal") or obj:IsA("Texture") then
+		obj.Transparency = value
+	elseif obj:IsA("SpecialMesh") or obj:IsA("BlockMesh") or obj:IsA("CylinderMesh") then
+		-- meshes dont have transparency directly
+	elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
+		obj.Enabled = value < 1
+	elseif obj:IsA("Sound") then
+		obj.Volume = value < 1 and 1 or 0
 	end
 end
 
 local function applyAction(mode, state)
 	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-		if v:IsA("ViewportFrame") and v.AbsolutePosition.X > (Camera.ViewportSize.X / 2) then
+		if v:IsA("ViewportFrame") then
+			local isOpponent = false
+			if v.AbsolutePosition.X > (Camera.ViewportSize.X / 2) then
+				isOpponent = true
+			end
 			if mode == "dragon" then
 				for _, obj in pairs(v:GetDescendants()) do
-					if isDragonCanelloni(obj) then
-						if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-							obj.LocalTransparencyModifier = state and 1 or 0
-						elseif obj:IsA("Decal") or obj:IsA("Texture") then
-							obj.Transparency = state and 1 or 0
+					if hasDragonName(obj) then
+						setAllTransparency(obj, state and 1 or 0)
+						if obj:IsA("Model") then
+							for _, part in pairs(obj:GetDescendants()) do
+								setAllTransparency(part, state and 1 or 0)
+							end
 						end
 					end
 				end
 			elseif mode == "disappear" then
 				for _, obj in pairs(v:GetDescendants()) do
-					if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-						obj.LocalTransparencyModifier = state and 1 or 0
-					elseif obj:IsA("Decal") or obj:IsA("Texture") then
-						obj.Transparency = state and 1 or 0
-					end
+					setAllTransparency(obj, state and 1 or 0)
 				end
-				hideBrainrot(v)
 			elseif mode == "freeze" then
 				for _, obj in pairs(v:GetDescendants()) do
 					if obj:IsA("Animator") then
@@ -192,6 +181,22 @@ local function applyAction(mode, state)
 					elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
 						obj.Anchored = state
 					end
+				end
+			end
+		end
+	end
+	if mode == "disappear" and state then
+		for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+			if gui:IsA("TextLabel") or gui:IsA("TextButton") then
+				local text = string.lower(gui.Text)
+				if string.find(text, "brainrot") or string.find(text, "skibidi") or string.find(text, "rizz") then
+					gui.Visible = false
+				end
+			end
+			if gui:IsA("Frame") or gui:IsA("ImageLabel") or gui:IsA("ImageButton") then
+				local name = string.lower(gui.Name)
+				if string.find(name, "brainrot") or string.find(name, "skibidi") then
+					gui.Visible = false
 				end
 			end
 		end
