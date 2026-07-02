@@ -1,5 +1,6 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
+local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
@@ -15,8 +16,8 @@ ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 220, 0, 255)
-MainFrame.Position = UDim2.new(0.5, -110, 0.5, -127)
+MainFrame.Size = UDim2.new(0, 180, 0, 130)
+MainFrame.Position = UDim2.new(0.5, -180, 0.5, -65)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -35,7 +36,7 @@ MainStroke.Transparency = 0.2
 MainStroke.Parent = MainFrame
 
 local TitleBar = Instance.new("Frame")
-TitleBar.Size = UDim2.new(1, 0, 0, 40)
+TitleBar.Size = UDim2.new(1, 0, 0, 36)
 TitleBar.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
@@ -45,8 +46,8 @@ TitleCorner.CornerRadius = UDim.new(0, 14)
 TitleCorner.Parent = TitleBar
 
 local TitleFix = Instance.new("Frame")
-TitleFix.Size = UDim2.new(1, 0, 0, 14)
-TitleFix.Position = UDim2.new(0, 0, 1, -14)
+TitleFix.Size = UDim2.new(1, 0, 0, 12)
+TitleFix.Position = UDim2.new(0, 0, 1, -12)
 TitleFix.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
 TitleFix.BorderSizePixel = 0
 TitleFix.Parent = TitleBar
@@ -56,29 +57,83 @@ TitleLabel.Size = UDim2.new(1, 0, 1, 0)
 TitleLabel.BackgroundTransparency = 1
 TitleLabel.Text = "FEGO HUB"
 TitleLabel.TextColor3 = Color3.fromRGB(170, 110, 255)
-TitleLabel.TextSize = 17
+TitleLabel.TextSize = 15
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.Parent = TitleBar
 
 local Divider = Instance.new("Frame")
 Divider.Size = UDim2.new(0.85, 0, 0, 1)
-Divider.Position = UDim2.new(0.075, 0, 0, 48)
+Divider.Position = UDim2.new(0.075, 0, 0, 44)
 Divider.BackgroundColor3 = Color3.fromRGB(60, 30, 100)
 Divider.BorderSizePixel = 0
 Divider.Parent = MainFrame
 
-local function CreateButton(name, text, yPos)
+local PetFrame = Instance.new("Frame")
+PetFrame.Name = "PetFrame"
+PetFrame.Size = UDim2.new(0, 180, 0, 220)
+PetFrame.Position = UDim2.new(0.5, 10, 0.5, -110)
+PetFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
+PetFrame.BorderSizePixel = 0
+PetFrame.Active = true
+PetFrame.Draggable = true
+PetFrame.Visible = false
+PetFrame.Parent = ScreenGui
+
+local PetCorner = Instance.new("UICorner")
+PetCorner.CornerRadius = UDim.new(0, 14)
+PetCorner.Parent = PetFrame
+
+local PetStroke = Instance.new("UIStroke")
+PetStroke.Color = Color3.fromRGB(120, 60, 200)
+PetStroke.Thickness = 1.5
+PetStroke.Transparency = 0.2
+PetStroke.Parent = PetFrame
+
+local PetTitleBar = Instance.new("Frame")
+PetTitleBar.Size = UDim2.new(1, 0, 0, 36)
+PetTitleBar.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
+PetTitleBar.BorderSizePixel = 0
+PetTitleBar.Parent = PetFrame
+
+local PetTitleCorner = Instance.new("UICorner")
+PetTitleCorner.CornerRadius = UDim.new(0, 14)
+PetTitleCorner.Parent = PetTitleBar
+
+local PetTitleFix = Instance.new("Frame")
+PetTitleFix.Size = UDim2.new(1, 0, 0, 12)
+PetTitleFix.Position = UDim2.new(0, 0, 1, -12)
+PetTitleFix.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
+PetTitleFix.BorderSizePixel = 0
+PetTitleFix.Parent = PetTitleBar
+
+local PetTitleLabel = Instance.new("TextLabel")
+PetTitleLabel.Size = UDim2.new(1, 0, 1, 0)
+PetTitleLabel.BackgroundTransparency = 1
+PetTitleLabel.Text = "PETS"
+PetTitleLabel.TextColor3 = Color3.fromRGB(170, 110, 255)
+PetTitleLabel.TextSize = 15
+PetTitleLabel.Font = Enum.Font.GothamBold
+PetTitleLabel.Parent = PetTitleBar
+
+local PetDivider = Instance.new("Frame")
+PetDivider.Size = UDim2.new(0.85, 0, 0, 1)
+PetDivider.Position = UDim2.new(0.075, 0, 0, 44)
+PetDivider.BackgroundColor3 = Color3.fromRGB(60, 30, 100)
+PetDivider.BorderSizePixel = 0
+PetDivider.Parent = PetFrame
+
+local function CreateButton(name, text, yPos, parent)
 	local Button = Instance.new("TextButton")
 	Button.Name = name
-	Button.Size = UDim2.new(0.86, 0, 0, 36)
+	Button.Size = UDim2.new(0.86, 0, 0, 34)
 	Button.Position = UDim2.new(0.07, 0, 0, yPos)
 	Button.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
 	Button.Text = text
 	Button.TextColor3 = Color3.fromRGB(200, 200, 210)
 	Button.Font = Enum.Font.GothamSemibold
-	Button.TextSize = 13
+	Button.TextSize = 12
 	Button.AutoButtonColor = false
-	Button.Parent = MainFrame
+	Button.Parent = parent
 
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
@@ -92,10 +147,12 @@ local function CreateButton(name, text, yPos)
 	return Button
 end
 
-local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 56)
-local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 92)
-local DragonBtn = CreateButton("DragonBtn", "[J] DISAPPEAR DRAGON  OFF", 128)
-local BrainrotBtn = CreateButton("BrainrotBtn", "[H] DISAPPEAR BRAINROT  OFF", 164)
+local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 52, MainFrame)
+local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 90, MainFrame)
+
+local HydraBtn = CreateButton("HydraBtn", "[1] HYDRA  OFF", 52, PetFrame)
+local CannelloniBtn = CreateButton("CannelloniBtn", "[2] DRAGON CANN.  OFF", 90, PetFrame)
+local GingerBtn = CreateButton("GingerBtn", "[3] GINGER GERAT  OFF", 128, PetFrame)
 
 local function UpdateButtonStyle(btn, active)
 	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
@@ -105,54 +162,22 @@ end
 
 local freezeActive = false
 local disappearActive = false
-local dragonActive = false
-local brainrotActive = false
+local hydraActive = false
+local cannelloniActive = false
+local gingerActive = false
 
-local function hasDragonName(obj)
-	local checkNames = {"dragon canelloni", "dragon cannelloni", "hydra", "ginger gerat"}
+local function matchesPet(obj, petName)
 	local name = string.lower(obj.Name)
-	for _, v in pairs(checkNames) do
-		if string.find(name, v) then
-			return true
-		end
+	if string.find(name, petName) then
+		return true
 	end
 	if obj:IsA("BasePart") or obj:IsA("MeshPart") then
 		for _, child in pairs(obj:GetChildren()) do
 			if child:IsA("BillboardGui") or child:IsA("SurfaceGui") then
 				for _, label in pairs(child:GetDescendants()) do
 					if label:IsA("TextLabel") then
-						local text = string.lower(label.Text)
-						for _, v in pairs(checkNames) do
-							if string.find(text, v) then
-								return true
-							end
-						end
-					end
-				end
-			end
-		end
-	end
-	return false
-end
-
-local function hasBrainrotName(obj)
-	local checkNames = {"brainrot", "skibidi", "rizz"}
-	local name = string.lower(obj.Name)
-	for _, v in pairs(checkNames) do
-		if string.find(name, v) then
-			return true
-		end
-	end
-	if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-		for _, child in pairs(obj:GetChildren()) do
-			if child:IsA("BillboardGui") or child:IsA("SurfaceGui") then
-				for _, label in pairs(child:GetDescendants()) do
-					if label:IsA("TextLabel") then
-						local text = string.lower(label.Text)
-						for _, v in pairs(checkNames) do
-							if string.find(text, v) then
-								return true
-							end
+						if string.find(string.lower(label.Text), petName) then
+							return true
 						end
 					end
 				end
@@ -169,8 +194,6 @@ local function setAllTransparency(obj, value)
 		obj.CastShadow = value < 1
 	elseif obj:IsA("Decal") or obj:IsA("Texture") then
 		obj.Transparency = value
-	elseif obj:IsA("SpecialMesh") or obj:IsA("BlockMesh") or obj:IsA("CylinderMesh") then
-		-- meshes dont have transparency directly
 	elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
 		obj.Enabled = value < 1
 	elseif obj:IsA("Sound") then
@@ -178,174 +201,38 @@ local function setAllTransparency(obj, value)
 	end
 end
 
-local function applyToViewport(v)
+local function hideModel(obj)
+	setAllTransparency(obj, 1)
+	if obj:IsA("Model") then
+		for _, part in pairs(obj:GetDescendants()) do
+			setAllTransparency(part, 1)
+		end
+	end
+end
+
+local function isAnyPetActive()
+	return hydraActive or cannelloniActive or gingerActive
+end
+
+local function shouldHide(obj)
+	if hydraActive and matchesPet(obj, "hydra") then return true end
+	if cannelloniActive and matchesPet(obj, "cannelloni") then return true end
+	if gingerActive and matchesPet(obj, "ginger gerat") then return true end
+	return false
+end
+
+local function scanViewport(v)
 	for _, obj in pairs(v:GetDescendants()) do
-		if dragonActive and hasDragonName(obj) then
-			setAllTransparency(obj, 1)
-			if obj:IsA("Model") then
-				for _, part in pairs(obj:GetDescendants()) do
-					setAllTransparency(part, 1)
-				end
-			end
-		elseif brainrotActive and hasBrainrotName(obj) then
-			setAllTransparency(obj, 1)
-			if obj:IsA("Model") then
-				for _, part in pairs(obj:GetDescendants()) do
-					setAllTransparency(part, 1)
-				end
-			end
-		elseif disappearActive then
-			setAllTransparency(obj, 1)
+		if shouldHide(obj) then
+			hideModel(obj)
 		end
-		if freezeActive then
-			if obj:IsA("Animator") then
-				for _, track in pairs(obj:GetPlayingAnimationTracks()) do
-					track:AdjustSpeed(0)
-				end
-			elseif obj:IsA("Humanoid") then
-				obj.WalkSpeed = 0
-				obj.JumpPower = 0
-			elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
-				obj.Anchored = true
+		local parent = obj.Parent
+		while parent and parent ~= v do
+			if shouldHide(parent) then
+				setAllTransparency(obj, 1)
+				break
 			end
-		end
-	end
-end
-
-local function applyAction(mode, state)
-	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-		if v:IsA("ViewportFrame") then
-			if mode == "dragon" then
-				for _, obj in pairs(v:GetDescendants()) do
-					if hasDragonName(obj) then
-						setAllTransparency(obj, state and 1 or 0)
-						if obj:IsA("Model") then
-							for _, part in pairs(obj:GetDescendants()) do
-								setAllTransparency(part, state and 1 or 0)
-							end
-						end
-					end
-				end
-			elseif mode == "brainrot" then
-				for _, obj in pairs(v:GetDescendants()) do
-					if hasBrainrotName(obj) then
-						setAllTransparency(obj, state and 1 or 0)
-						if obj:IsA("Model") then
-							for _, part in pairs(obj:GetDescendants()) do
-								setAllTransparency(part, state and 1 or 0)
-							end
-						end
-					end
-				end
-			elseif mode == "disappear" then
-				for _, obj in pairs(v:GetDescendants()) do
-					setAllTransparency(obj, state and 1 or 0)
-				end
-			elseif mode == "freeze" then
-				for _, obj in pairs(v:GetDescendants()) do
-					if obj:IsA("Animator") then
-						for _, track in pairs(obj:GetPlayingAnimationTracks()) do
-							track:AdjustSpeed(state and 0 or 1)
-						end
-					elseif obj:IsA("Humanoid") then
-						obj.WalkSpeed = state and 0 or 16
-						obj.JumpPower = state and 0 or 50
-					elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
-						obj.Anchored = state
-					end
-				end
-			end
-		end
-	end
-end
-
-FreezeBtn.MouseButton1Click:Connect(function()
-	freezeActive = not freezeActive
-	UpdateButtonStyle(FreezeBtn, freezeActive)
-	applyAction("freeze", freezeActive)
-end)
-
-DisappearBtn.MouseButton1Click:Connect(function()
-	disappearActive = not disappearActive
-	UpdateButtonStyle(DisappearBtn, disappearActive)
-	applyAction("disappear", disappearActive)
-end)
-
-DragonBtn.MouseButton1Click:Connect(function()
-	dragonActive = not dragonActive
-	UpdateButtonStyle(DragonBtn, dragonActive)
-	applyAction("dragon", dragonActive)
-end)
-
-BrainrotBtn.MouseButton1Click:Connect(function()
-	brainrotActive = not brainrotActive
-	UpdateButtonStyle(BrainrotBtn, brainrotActive)
-	applyAction("brainrot", brainrotActive)
-end)
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.R then
-		MainFrame.Visible = not MainFrame.Visible
-	elseif input.KeyCode == Enum.KeyCode.Y then
-		freezeActive = not freezeActive
-		UpdateButtonStyle(FreezeBtn, freezeActive)
-		applyAction("freeze", freezeActive)
-	elseif input.KeyCode == Enum.KeyCode.G then
-		disappearActive = not disappearActive
-		UpdateButtonStyle(DisappearBtn, disappearActive)
-		applyAction("disappear", disappearActive)
-	elseif input.KeyCode == Enum.KeyCode.J then
-		dragonActive = not dragonActive
-		UpdateButtonStyle(DragonBtn, dragonActive)
-		applyAction("dragon", dragonActive)
-	elseif input.KeyCode == Enum.KeyCode.H then
-		brainrotActive = not brainrotActive
-		UpdateButtonStyle(BrainrotBtn, brainrotActive)
-		applyAction("brainrot", brainrotActive)
-	end
-end)
-
-local RunService = game:GetService("RunService")
-
-local function monitorViewport(v)
-	v.DescendantAdded:Connect(function(obj)
-		task.wait()
-		if dragonActive and hasDragonName(obj) then
-			setAllTransparency(obj, 1)
-			if obj:IsA("Model") then
-				for _, part in pairs(obj:GetDescendants()) do
-					setAllTransparency(part, 1)
-				end
-			end
-			for _, child in pairs(obj:GetChildren()) do
-				setAllTransparency(child, 1)
-			end
-		end
-		if brainrotActive and hasBrainrotName(obj) then
-			setAllTransparency(obj, 1)
-			if obj:IsA("Model") then
-				for _, part in pairs(obj:GetDescendants()) do
-					setAllTransparency(part, 1)
-				end
-			end
-			for _, child in pairs(obj:GetChildren()) do
-				setAllTransparency(child, 1)
-			end
-		end
-		if dragonActive or brainrotActive then
-			local parent = obj.Parent
-			while parent and parent ~= v do
-				if dragonActive and hasDragonName(parent) then
-					setAllTransparency(obj, 1)
-					break
-				end
-				if brainrotActive and hasBrainrotName(parent) then
-					setAllTransparency(obj, 1)
-					break
-				end
-				parent = parent.Parent
-			end
+			parent = parent.Parent
 		end
 		if disappearActive then
 			setAllTransparency(obj, 1)
@@ -353,81 +240,72 @@ local function monitorViewport(v)
 		if freezeActive then
 			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
 				obj.Anchored = true
-			end
-		end
-	end)
-end
-
-local function scanAllViewports()
-	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-		if v:IsA("ViewportFrame") then
-			for _, obj in pairs(v:GetDescendants()) do
-				if dragonActive and hasDragonName(obj) then
-					setAllTransparency(obj, 1)
-					if obj:IsA("Model") then
-						for _, part in pairs(obj:GetDescendants()) do
-							setAllTransparency(part, 1)
-						end
-					end
+			elseif obj:IsA("Animator") then
+				for _, track in pairs(obj:GetPlayingAnimationTracks()) do
+					track:AdjustSpeed(0)
 				end
-				if brainrotActive and hasBrainrotName(obj) then
-					setAllTransparency(obj, 1)
-					if obj:IsA("Model") then
-						for _, part in pairs(obj:GetDescendants()) do
-							setAllTransparency(part, 1)
-						end
-					end
-				end
-				if dragonActive or brainrotActive then
-					local parent = obj.Parent
-					while parent and parent ~= v do
-						if dragonActive and hasDragonName(parent) then
-							setAllTransparency(obj, 1)
-							break
-						end
-						if brainrotActive and hasBrainrotName(parent) then
-							setAllTransparency(obj, 1)
-							break
-						end
-						parent = parent.Parent
-					end
-				end
+			elseif obj:IsA("Humanoid") then
+				obj.WalkSpeed = 0
+				obj.JumpPower = 0
 			end
 		end
 	end
 end
 
 RunService.Heartbeat:Connect(function()
-	if dragonActive or brainrotActive then
-		scanAllViewports()
+	if isAnyPetActive() or disappearActive or freezeActive then
+		for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+			if v:IsA("ViewportFrame") then
+				scanViewport(v)
+			end
+		end
 	end
 end)
 
-local lastApply = 0
-
-LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
-	if not obj:IsA("ViewportFrame") then return end
-	local now = tick()
-	if now - lastApply < 1 then return end
-	lastApply = now
-	monitorViewport(obj)
-	if dragonActive or disappearActive or freezeActive or brainrotActive then
-		applyToViewport(obj)
-	end
+HydraBtn.MouseButton1Click:Connect(function()
+	hydraActive = not hydraActive
+	UpdateButtonStyle(HydraBtn, hydraActive)
 end)
 
-LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
-	if not disappearActive then return end
-	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
-		local text = string.lower(obj.Text)
-		if string.find(text, "brainrot") or string.find(text, "skibidi") or string.find(text, "rizz") then
-			obj.Visible = false
-		end
-	end
-	if obj:IsA("Frame") or obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-		local name = string.lower(obj.Name)
-		if string.find(name, "brainrot") or string.find(name, "skibidi") then
-			obj.Visible = false
-		end
+CannelloniBtn.MouseButton1Click:Connect(function()
+	cannelloniActive = not cannelloniActive
+	UpdateButtonStyle(CannelloniBtn, cannelloniActive)
+end)
+
+GingerBtn.MouseButton1Click:Connect(function()
+	gingerActive = not gingerActive
+	UpdateButtonStyle(GingerBtn, gingerActive)
+end)
+
+FreezeBtn.MouseButton1Click:Connect(function()
+	freezeActive = not freezeActive
+	UpdateButtonStyle(FreezeBtn, freezeActive)
+end)
+
+DisappearBtn.MouseButton1Click:Connect(function()
+	disappearActive = not disappearActive
+	UpdateButtonStyle(DisappearBtn, disappearActive)
+end)
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+	if gameProcessed then return end
+	if input.KeyCode == Enum.KeyCode.R then
+		MainFrame.Visible = not MainFrame.Visible
+		PetFrame.Visible = not PetFrame.Visible
+	elseif input.KeyCode == Enum.KeyCode.Y then
+		freezeActive = not freezeActive
+		UpdateButtonStyle(FreezeBtn, freezeActive)
+	elseif input.KeyCode == Enum.KeyCode.G then
+		disappearActive = not disappearActive
+		UpdateButtonStyle(DisappearBtn, disappearActive)
+	elseif input.KeyCode == Enum.KeyCode.One then
+		hydraActive = not hydraActive
+		UpdateButtonStyle(HydraBtn, hydraActive)
+	elseif input.KeyCode == Enum.KeyCode.Two then
+		cannelloniActive = not cannelloniActive
+		UpdateButtonStyle(CannelloniBtn, cannelloniActive)
+	elseif input.KeyCode == Enum.KeyCode.Three then
+		gingerActive = not gingerActive
+		UpdateButtonStyle(GingerBtn, gingerActive)
 	end
 end)
