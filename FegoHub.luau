@@ -94,7 +94,7 @@ end
 
 local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 56)
 local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 100)
-local DragonBtn = CreateButton("DragonBtn", "[D] ONLY DRAGON  OFF", 144)
+local DragonBtn = CreateButton("DragonBtn", "[J] ONLY DRAGON  OFF", 144)
 
 local function UpdateButtonStyle(btn, active)
 	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
@@ -188,7 +188,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		disappearActive = not disappearActive
 		UpdateButtonStyle(DisappearBtn, disappearActive)
 		applyAction("disappear", disappearActive)
-	elseif input.KeyCode == Enum.KeyCode.D then
+	elseif input.KeyCode == Enum.KeyCode.J then
 		dragonActive = not dragonActive
 		UpdateButtonStyle(DragonBtn, dragonActive)
 		applyAction("dragon", dragonActive)
