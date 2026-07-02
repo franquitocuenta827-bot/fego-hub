@@ -107,7 +107,7 @@ local disappearActive = false
 local dragonActive = false
 
 local function hasDragonName(obj)
-	local checkNames = {"dragon canelloni", "dragon", "canelloni"}
+	local checkNames = {"dragon canelloni", "dragon cannelloni", "hydra", "ginger gerat", "brainrot"}
 	local name = string.lower(obj.Name)
 	for _, v in pairs(checkNames) do
 		if string.find(name, v) then
@@ -120,8 +120,10 @@ local function hasDragonName(obj)
 				for _, label in pairs(child:GetDescendants()) do
 					if label:IsA("TextLabel") then
 						local text = string.lower(label.Text)
-						if string.find(text, "dragon") or string.find(text, "canelloni") then
-							return true
+						for _, v in pairs(checkNames) do
+							if string.find(text, v) then
+								return true
+							end
 						end
 					end
 				end
