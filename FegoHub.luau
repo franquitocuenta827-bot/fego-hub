@@ -106,19 +106,56 @@ local freezeActive = false
 local disappearActive = false
 local dragonActive = false
 
-local function isDragon(obj)
-	if obj:IsA("Model") then
-		local name = string.lower(obj.Name)
-		if string.find(name, "dragon") or string.find(name, "drake") or string.find(name, "wyvern") then
-			return true
-		end
-	elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
-		local name = string.lower(obj.Name)
-		if string.find(name, "dragon") or string.find(name, "drake") or string.find(name, "wyvern") then
+local function isDragonCanelloni(obj)
+	local name = string.lower(obj.Name)
+	if string.find(name, "dragon canelloni") then
+		return true
+	end
+	local parent = obj.Parent
+	if parent and parent:IsA("Model") then
+		if string.find(string.lower(parent.Name), "dragon canelloni") then
 			return true
 		end
 	end
+	for _, child in pairs(obj:GetChildren()) do
+		if child:IsA("BillboardGui") or child:IsA("TextLabel") or child:IsA("SurfaceGui") then
+			local text = ""
+			if child:IsA("TextLabel") then
+				text = child.Text
+			elseif child:IsA("SurfaceGui") and child:FindFirstChildWhichIsA("TextLabel") then
+				text = child:FindFirstChildWhichIsA("TextLabel").Text
+			elseif child:IsA("BillboardGui") and child:FindFirstChildWhichIsA("TextLabel") then
+				text = child:FindFirstChildWhichIsA("TextLabel").Text
+			end
+			if string.find(string.lower(text), "dragon canelloni") then
+				return true
+			end
+		end
+	end
 	return false
+end
+
+local function hideBrainrot(v)
+	for _, obj in pairs(v:GetDescendants()) do
+		if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+			local text = string.lower(obj.Text)
+			if string.find(text, "brainrot") or string.find(text, "skibidi") or string.find(text, "rizz") then
+				obj.Visible = false
+			end
+		end
+		if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+			local name = string.lower(obj.Name)
+			if string.find(name, "brainrot") or string.find(name, "skibidi") then
+				obj.Visible = false
+			end
+		end
+		if obj:IsA("Frame") then
+			local name = string.lower(obj.Name)
+			if string.find(name, "brainrot") or string.find(name, "skibidi") then
+				obj.Visible = false
+			end
+		end
+	end
 end
 
 local function applyAction(mode, state)
@@ -126,31 +163,34 @@ local function applyAction(mode, state)
 		if v:IsA("ViewportFrame") and v.AbsolutePosition.X > (Camera.ViewportSize.X / 2) then
 			if mode == "dragon" then
 				for _, obj in pairs(v:GetDescendants()) do
-					if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-						if isDragon(obj) then
-							obj.LocalTransparencyModifier = state and 1 or 0
-						end
-					end
-				end
-			else
-				for _, obj in pairs(v:GetDescendants()) do
-					if mode == "freeze" then
-						if obj:IsA("Animator") then
-							for _, track in pairs(obj:GetPlayingAnimationTracks()) do
-								track:AdjustSpeed(state and 0 or 1)
-							end
-						elseif obj:IsA("Humanoid") then
-							obj.WalkSpeed = state and 0 or 16
-							obj.JumpPower = state and 0 or 50
-						elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
-							obj.Anchored = state
-						end
-					elseif mode == "disappear" then
+					if isDragonCanelloni(obj) then
 						if obj:IsA("BasePart") or obj:IsA("MeshPart") then
 							obj.LocalTransparencyModifier = state and 1 or 0
 						elseif obj:IsA("Decal") or obj:IsA("Texture") then
 							obj.Transparency = state and 1 or 0
 						end
+					end
+				end
+			elseif mode == "disappear" then
+				for _, obj in pairs(v:GetDescendants()) do
+					if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+						obj.LocalTransparencyModifier = state and 1 or 0
+					elseif obj:IsA("Decal") or obj:IsA("Texture") then
+						obj.Transparency = state and 1 or 0
+					end
+				end
+				hideBrainrot(v)
+			elseif mode == "freeze" then
+				for _, obj in pairs(v:GetDescendants()) do
+					if obj:IsA("Animator") then
+						for _, track in pairs(obj:GetPlayingAnimationTracks()) do
+							track:AdjustSpeed(state and 0 or 1)
+						end
+					elseif obj:IsA("Humanoid") then
+						obj.WalkSpeed = state and 0 or 16
+						obj.JumpPower = state and 0 or 50
+					elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
+						obj.Anchored = state
 					end
 				end
 			end
