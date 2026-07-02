@@ -15,8 +15,8 @@ ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 220, 0, 215)
-MainFrame.Position = UDim2.new(0.5, -110, 0.5, -107)
+MainFrame.Size = UDim2.new(0, 220, 0, 255)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -127)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -93,8 +93,9 @@ local function CreateButton(name, text, yPos)
 end
 
 local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 56)
-local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 100)
-local DragonBtn = CreateButton("DragonBtn", "[J] DISAPPEAR DRAGON  OFF", 144)
+local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 92)
+local DragonBtn = CreateButton("DragonBtn", "[J] DISAPPEAR DRAGON  OFF", 128)
+local BrainrotBtn = CreateButton("BrainrotBtn", "[H] DISAPPEAR BRAINROT  OFF", 164)
 
 local function UpdateButtonStyle(btn, active)
 	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
@@ -105,9 +106,37 @@ end
 local freezeActive = false
 local disappearActive = false
 local dragonActive = false
+local brainrotActive = false
 
 local function hasDragonName(obj)
-	local checkNames = {"dragon canelloni", "dragon cannelloni", "hydra", "ginger gerat", "brainrot"}
+	local checkNames = {"dragon canelloni", "dragon cannelloni", "hydra", "ginger gerat"}
+	local name = string.lower(obj.Name)
+	for _, v in pairs(checkNames) do
+		if string.find(name, v) then
+			return true
+		end
+	end
+	if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+		for _, child in pairs(obj:GetChildren()) do
+			if child:IsA("BillboardGui") or child:IsA("SurfaceGui") then
+				for _, label in pairs(child:GetDescendants()) do
+					if label:IsA("TextLabel") then
+						local text = string.lower(label.Text)
+						for _, v in pairs(checkNames) do
+							if string.find(text, v) then
+								return true
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+	return false
+end
+
+local function hasBrainrotName(obj)
+	local checkNames = {"brainrot", "skibidi", "rizz"}
 	local name = string.lower(obj.Name)
 	for _, v in pairs(checkNames) do
 		if string.find(name, v) then
@@ -158,6 +187,13 @@ local function applyToViewport(v)
 					setAllTransparency(part, 1)
 				end
 			end
+		elseif brainrotActive and hasBrainrotName(obj) then
+			setAllTransparency(obj, 1)
+			if obj:IsA("Model") then
+				for _, part in pairs(obj:GetDescendants()) do
+					setAllTransparency(part, 1)
+				end
+			end
 		elseif disappearActive then
 			setAllTransparency(obj, 1)
 		end
@@ -182,6 +218,17 @@ local function applyAction(mode, state)
 			if mode == "dragon" then
 				for _, obj in pairs(v:GetDescendants()) do
 					if hasDragonName(obj) then
+						setAllTransparency(obj, state and 1 or 0)
+						if obj:IsA("Model") then
+							for _, part in pairs(obj:GetDescendants()) do
+								setAllTransparency(part, state and 1 or 0)
+							end
+						end
+					end
+				end
+			elseif mode == "brainrot" then
+				for _, obj in pairs(v:GetDescendants()) do
+					if hasBrainrotName(obj) then
 						setAllTransparency(obj, state and 1 or 0)
 						if obj:IsA("Model") then
 							for _, part in pairs(obj:GetDescendants()) do
@@ -230,6 +277,12 @@ DragonBtn.MouseButton1Click:Connect(function()
 	applyAction("dragon", dragonActive)
 end)
 
+BrainrotBtn.MouseButton1Click:Connect(function()
+	brainrotActive = not brainrotActive
+	UpdateButtonStyle(BrainrotBtn, brainrotActive)
+	applyAction("brainrot", brainrotActive)
+end)
+
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
 	if input.KeyCode == Enum.KeyCode.R then
@@ -246,6 +299,10 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		dragonActive = not dragonActive
 		UpdateButtonStyle(DragonBtn, dragonActive)
 		applyAction("dragon", dragonActive)
+	elseif input.KeyCode == Enum.KeyCode.H then
+		brainrotActive = not brainrotActive
+		UpdateButtonStyle(BrainrotBtn, brainrotActive)
+		applyAction("brainrot", brainrotActive)
 	end
 end)
 
@@ -254,21 +311,36 @@ local RunService = game:GetService("RunService")
 local function monitorViewport(v)
 	v.DescendantAdded:Connect(function(obj)
 		task.wait()
-		if dragonActive then
-			if hasDragonName(obj) then
-				setAllTransparency(obj, 1)
-				if obj:IsA("Model") then
-					for _, part in pairs(obj:GetDescendants()) do
-						setAllTransparency(part, 1)
-					end
-				end
-				for _, child in pairs(obj:GetChildren()) do
-					setAllTransparency(child, 1)
+		if dragonActive and hasDragonName(obj) then
+			setAllTransparency(obj, 1)
+			if obj:IsA("Model") then
+				for _, part in pairs(obj:GetDescendants()) do
+					setAllTransparency(part, 1)
 				end
 			end
+			for _, child in pairs(obj:GetChildren()) do
+				setAllTransparency(child, 1)
+			end
+		end
+		if brainrotActive and hasBrainrotName(obj) then
+			setAllTransparency(obj, 1)
+			if obj:IsA("Model") then
+				for _, part in pairs(obj:GetDescendants()) do
+					setAllTransparency(part, 1)
+				end
+			end
+			for _, child in pairs(obj:GetChildren()) do
+				setAllTransparency(child, 1)
+			end
+		end
+		if dragonActive or brainrotActive then
 			local parent = obj.Parent
 			while parent and parent ~= v do
-				if hasDragonName(parent) then
+				if dragonActive and hasDragonName(parent) then
+					setAllTransparency(obj, 1)
+					break
+				end
+				if brainrotActive and hasBrainrotName(parent) then
 					setAllTransparency(obj, 1)
 					break
 				end
@@ -289,19 +361,31 @@ end
 local function scanAllViewports()
 	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 		if v:IsA("ViewportFrame") then
-			if dragonActive then
-				for _, obj in pairs(v:GetDescendants()) do
-					if hasDragonName(obj) then
-						setAllTransparency(obj, 1)
-						if obj:IsA("Model") then
-							for _, part in pairs(obj:GetDescendants()) do
-								setAllTransparency(part, 1)
-							end
+			for _, obj in pairs(v:GetDescendants()) do
+				if dragonActive and hasDragonName(obj) then
+					setAllTransparency(obj, 1)
+					if obj:IsA("Model") then
+						for _, part in pairs(obj:GetDescendants()) do
+							setAllTransparency(part, 1)
 						end
 					end
+				end
+				if brainrotActive and hasBrainrotName(obj) then
+					setAllTransparency(obj, 1)
+					if obj:IsA("Model") then
+						for _, part in pairs(obj:GetDescendants()) do
+							setAllTransparency(part, 1)
+						end
+					end
+				end
+				if dragonActive or brainrotActive then
 					local parent = obj.Parent
 					while parent and parent ~= v do
-						if hasDragonName(parent) then
+						if dragonActive and hasDragonName(parent) then
+							setAllTransparency(obj, 1)
+							break
+						end
+						if brainrotActive and hasBrainrotName(parent) then
 							setAllTransparency(obj, 1)
 							break
 						end
@@ -314,7 +398,7 @@ local function scanAllViewports()
 end
 
 RunService.Heartbeat:Connect(function()
-	if dragonActive then
+	if dragonActive or brainrotActive then
 		scanAllViewports()
 	end
 end)
@@ -327,7 +411,7 @@ LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
 	if now - lastApply < 1 then return end
 	lastApply = now
 	monitorViewport(obj)
-	if dragonActive or disappearActive or freezeActive then
+	if dragonActive or disappearActive or freezeActive or brainrotActive then
 		applyToViewport(obj)
 	end
 end)
