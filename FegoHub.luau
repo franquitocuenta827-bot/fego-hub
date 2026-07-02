@@ -15,8 +15,8 @@ ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 220, 0, 170)
-MainFrame.Position = UDim2.new(0.5, -110, 0.5, -85)
+MainFrame.Size = UDim2.new(0, 220, 0, 215)
+MainFrame.Position = UDim2.new(0.5, -110, 0.5, -107)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -94,6 +94,7 @@ end
 
 local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 56)
 local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 100)
+local DragonBtn = CreateButton("DragonBtn", "[D] ONLY DRAGON  OFF", 144)
 
 local function UpdateButtonStyle(btn, active)
 	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
@@ -103,27 +104,53 @@ end
 
 local freezeActive = false
 local disappearActive = false
+local dragonActive = false
+
+local function isDragon(obj)
+	if obj:IsA("Model") then
+		local name = string.lower(obj.Name)
+		if string.find(name, "dragon") or string.find(name, "drake") or string.find(name, "wyvern") then
+			return true
+		end
+	elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
+		local name = string.lower(obj.Name)
+		if string.find(name, "dragon") or string.find(name, "drake") or string.find(name, "wyvern") then
+			return true
+		end
+	end
+	return false
+end
 
 local function applyAction(mode, state)
 	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 		if v:IsA("ViewportFrame") and v.AbsolutePosition.X > (Camera.ViewportSize.X / 2) then
-			for _, obj in pairs(v:GetDescendants()) do
-				if mode == "freeze" then
-					if obj:IsA("Animator") then
-						for _, track in pairs(obj:GetPlayingAnimationTracks()) do
-							track:AdjustSpeed(state and 0 or 1)
-						end
-					elseif obj:IsA("Humanoid") then
-						obj.WalkSpeed = state and 0 or 16
-						obj.JumpPower = state and 0 or 50
-					elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
-						obj.Anchored = state
-					end
-				elseif mode == "disappear" then
+			if mode == "dragon" then
+				for _, obj in pairs(v:GetDescendants()) do
 					if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-						obj.LocalTransparencyModifier = state and 1 or 0
-					elseif obj:IsA("Decal") or obj:IsA("Texture") then
-						obj.Transparency = state and 1 or 0
+						if isDragon(obj) then
+							obj.LocalTransparencyModifier = state and 1 or 0
+						end
+					end
+				end
+			else
+				for _, obj in pairs(v:GetDescendants()) do
+					if mode == "freeze" then
+						if obj:IsA("Animator") then
+							for _, track in pairs(obj:GetPlayingAnimationTracks()) do
+								track:AdjustSpeed(state and 0 or 1)
+							end
+						elseif obj:IsA("Humanoid") then
+							obj.WalkSpeed = state and 0 or 16
+							obj.JumpPower = state and 0 or 50
+						elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
+							obj.Anchored = state
+						end
+					elseif mode == "disappear" then
+						if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+							obj.LocalTransparencyModifier = state and 1 or 0
+						elseif obj:IsA("Decal") or obj:IsA("Texture") then
+							obj.Transparency = state and 1 or 0
+						end
 					end
 				end
 			end
@@ -143,6 +170,12 @@ DisappearBtn.MouseButton1Click:Connect(function()
 	applyAction("disappear", disappearActive)
 end)
 
+DragonBtn.MouseButton1Click:Connect(function()
+	dragonActive = not dragonActive
+	UpdateButtonStyle(DragonBtn, dragonActive)
+	applyAction("dragon", dragonActive)
+end)
+
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
 	if input.KeyCode == Enum.KeyCode.R then
@@ -155,5 +188,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		disappearActive = not disappearActive
 		UpdateButtonStyle(DisappearBtn, disappearActive)
 		applyAction("disappear", disappearActive)
+	elseif input.KeyCode == Enum.KeyCode.D then
+		dragonActive = not dragonActive
+		UpdateButtonStyle(DragonBtn, dragonActive)
+		applyAction("dragon", dragonActive)
 	end
 end)
