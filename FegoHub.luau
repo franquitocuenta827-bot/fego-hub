@@ -247,6 +247,41 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	end
 end)
 
+local function monitorViewport(v)
+	v.DescendantAdded:Connect(function(obj)
+		task.wait()
+		if dragonActive then
+			if hasDragonName(obj) then
+				setAllTransparency(obj, 1)
+				if obj:IsA("Model") then
+					for _, part in pairs(obj:GetDescendants()) do
+						setAllTransparency(part, 1)
+					end
+				end
+				for _, child in pairs(obj:GetChildren()) do
+					setAllTransparency(child, 1)
+				end
+			end
+			local parent = obj.Parent
+			while parent and parent ~= v do
+				if hasDragonName(parent) then
+					setAllTransparency(obj, 1)
+					break
+				end
+				parent = parent.Parent
+			end
+		end
+		if disappearActive then
+			setAllTransparency(obj, 1)
+		end
+		if freezeActive then
+			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+				obj.Anchored = true
+			end
+		end
+	end)
+end
+
 local lastApply = 0
 
 LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
@@ -254,6 +289,7 @@ LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
 	local now = tick()
 	if now - lastApply < 1 then return end
 	lastApply = now
+	monitorViewport(obj)
 	if dragonActive or disappearActive or freezeActive then
 		applyToViewport(obj)
 	end
