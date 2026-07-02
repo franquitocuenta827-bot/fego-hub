@@ -17,8 +17,8 @@ ScreenGui.Parent = CoreGui
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 200, 0, 260)
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -130)
+MainFrame.Size = UDim2.new(0, 200, 0, 200)
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -100)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -69,36 +69,59 @@ Divider.BackgroundColor3 = Color3.fromRGB(60, 30, 100)
 Divider.BorderSizePixel = 0
 Divider.Parent = MainFrame
 
-local SectionLabel = Instance.new("TextLabel")
-SectionLabel.Size = UDim2.new(0.86, 0, 0, 20)
-SectionLabel.Position = UDim2.new(0.07, 0, 0, 50)
-SectionLabel.BackgroundTransparency = 1
-SectionLabel.Text = "OPTIONS"
-SectionLabel.TextColor3 = Color3.fromRGB(120, 80, 180)
-SectionLabel.TextSize = 11
-SectionLabel.Font = Enum.Font.GothamBold
-SectionLabel.TextXAlignment = Enum.TextXAlignment.Left
-SectionLabel.Parent = MainFrame
+local TabMain = Instance.new("TextButton")
+TabMain.Name = "TabMain"
+TabMain.Size = UDim2.new(0.45, 0, 0, 22)
+TabMain.Position = UDim2.new(0.03, 0, 0, 50)
+TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
+TabMain.Text = "MAIN"
+TabMain.TextColor3 = Color3.new(1, 1, 1)
+TabMain.Font = Enum.Font.GothamBold
+TabMain.TextSize = 11
+TabMain.AutoButtonColor = false
+TabMain.Parent = MainFrame
 
-local PetsLabel = Instance.new("TextLabel")
-PetsLabel.Size = UDim2.new(0.86, 0, 0, 20)
-PetsLabel.Position = UDim2.new(0.07, 0, 0, 148)
-PetsLabel.BackgroundTransparency = 1
-PetsLabel.Text = "PETS"
-PetsLabel.TextColor3 = Color3.fromRGB(120, 80, 180)
-PetsLabel.TextSize = 11
-PetsLabel.Font = Enum.Font.GothamBold
-PetsLabel.TextXAlignment = Enum.TextXAlignment.Left
-PetsLabel.Parent = MainFrame
+local TabMainCorner = Instance.new("UICorner")
+TabMainCorner.CornerRadius = UDim.new(0, 6)
+TabMainCorner.Parent = TabMain
 
-local PetDivider = Instance.new("Frame")
-PetDivider.Size = UDim2.new(0.85, 0, 0, 1)
-PetDivider.Position = UDim2.new(0.075, 0, 0, 142)
-PetDivider.BackgroundColor3 = Color3.fromRGB(60, 30, 100)
-PetDivider.BorderSizePixel = 0
-PetDivider.Parent = MainFrame
+local TabPets = Instance.new("TextButton")
+TabPets.Name = "TabPets"
+TabPets.Size = UDim2.new(0.45, 0, 0, 22)
+TabPets.Position = UDim2.new(0.52, 0, 0, 50)
+TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+TabPets.Text = "PETS"
+TabPets.TextColor3 = Color3.fromRGB(200, 200, 210)
+TabPets.Font = Enum.Font.GothamBold
+TabPets.TextSize = 11
+TabPets.AutoButtonColor = false
+TabPets.Parent = MainFrame
 
-local function CreateButton(name, text, yPos)
+local TabPetsCorner = Instance.new("UICorner")
+TabPetsCorner.CornerRadius = UDim.new(0, 6)
+TabPetsCorner.Parent = TabPets
+
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Size = UDim2.new(1, 0, 1, -80)
+ContentFrame.Position = UDim2.new(0, 0, 0, 78)
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Parent = MainFrame
+
+local MainContent = Instance.new("Frame")
+MainContent.Name = "MainContent"
+MainContent.Size = UDim2.new(1, 0, 1, 0)
+MainContent.BackgroundTransparency = 1
+MainContent.Parent = ContentFrame
+
+local PetsContent = Instance.new("Frame")
+PetsContent.Name = "PetsContent"
+PetsContent.Size = UDim2.new(1, 0, 1, 0)
+PetsContent.BackgroundTransparency = 1
+PetsContent.Visible = false
+PetsContent.Parent = ContentFrame
+
+local function CreateButton(name, text, yPos, parent)
 	local Button = Instance.new("TextButton")
 	Button.Name = name
 	Button.Size = UDim2.new(0.86, 0, 0, 34)
@@ -109,7 +132,7 @@ local function CreateButton(name, text, yPos)
 	Button.Font = Enum.Font.GothamSemibold
 	Button.TextSize = 12
 	Button.AutoButtonColor = false
-	Button.Parent = MainFrame
+	Button.Parent = parent
 
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
@@ -123,18 +146,39 @@ local function CreateButton(name, text, yPos)
 	return Button
 end
 
-local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 72)
-local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 110)
+local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 0, MainContent)
+local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 42, MainContent)
 
-local HydraBtn = CreateButton("HydraBtn", "[1] HYDRA  OFF", 168)
-local CannelloniBtn = CreateButton("CannelloniBtn", "[2] DRAGON CANN.  OFF", 206)
-local GingerBtn = CreateButton("GingerBtn", "[3] GINGER GERAT  OFF", 244)
+local HydraBtn = CreateButton("HydraBtn", "[1] HYDRA  OFF", 0, PetsContent)
+local CannelloniBtn = CreateButton("CannelloniBtn", "[2] DRAGON CANN.  OFF", 42, PetsContent)
+local GingerBtn = CreateButton("GingerBtn", "[3] GINGER GERAT  OFF", 84, PetsContent)
 
 local function UpdateButtonStyle(btn, active)
 	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
 	btn.BackgroundColor3 = active and Color3.fromRGB(30, 110, 50) or Color3.fromRGB(28, 28, 38)
 	btn.TextColor3 = active and Color3.fromRGB(180, 255, 180) or Color3.fromRGB(200, 200, 210)
 end
+
+local function UpdateTabs(showMain)
+	if showMain then
+		MainContent.Visible = true
+		PetsContent.Visible = false
+		TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
+		TabMain.TextColor3 = Color3.new(1, 1, 1)
+		TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+		TabPets.TextColor3 = Color3.fromRGB(200, 200, 210)
+	else
+		MainContent.Visible = false
+		PetsContent.Visible = true
+		TabPets.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
+		TabPets.TextColor3 = Color3.new(1, 1, 1)
+		TabMain.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+		TabMain.TextColor3 = Color3.fromRGB(200, 200, 210)
+	end
+end
+
+TabMain.MouseButton1Click:Connect(function() UpdateTabs(true) end)
+TabPets.MouseButton1Click:Connect(function() UpdateTabs(false) end)
 
 local freezeActive = false
 local disappearActive = false
