@@ -239,3 +239,16 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		applyAction("dragon", dragonActive)
 	end
 end)
+
+LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
+	task.wait(0.2)
+	if freezeActive then
+		applyAction("freeze", true)
+	end
+	if disappearActive then
+		applyAction("disappear", true)
+	end
+	if dragonActive then
+		applyAction("dragon", true)
+	end
+end)
