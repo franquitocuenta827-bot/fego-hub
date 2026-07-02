@@ -21,6 +21,7 @@ MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
 MainFrame.Draggable = true
+MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
 
 local MainCorner = Instance.new("UICorner")
@@ -91,8 +92,8 @@ local function CreateButton(name, text, yPos)
 	return Button
 end
 
-local FreezeBtn = CreateButton("FreezeBtn", "FREEZE  OFF", 56)
-local DisappearBtn = CreateButton("DisappearBtn", "DISAPPEAR  OFF", 100)
+local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 56)
+local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 100)
 
 local function UpdateButtonStyle(btn, active)
 	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
@@ -102,7 +103,6 @@ end
 
 local freezeActive = false
 local disappearActive = false
-local toggleKey = Enum.KeyCode.RightControl
 
 local function applyAction(mode, state)
 	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
@@ -145,7 +145,15 @@ end)
 
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
-	if input.KeyCode == toggleKey then
+	if input.KeyCode == Enum.KeyCode.R then
 		MainFrame.Visible = not MainFrame.Visible
+	elseif input.KeyCode == Enum.KeyCode.Y then
+		freezeActive = not freezeActive
+		UpdateButtonStyle(FreezeBtn, freezeActive)
+		applyAction("freeze", freezeActive)
+	elseif input.KeyCode == Enum.KeyCode.G then
+		disappearActive = not disappearActive
+		UpdateButtonStyle(DisappearBtn, disappearActive)
+		applyAction("disappear", disappearActive)
 	end
 end)
