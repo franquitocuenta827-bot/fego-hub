@@ -247,6 +247,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	end
 end)
 
+local RunService = game:GetService("RunService")
+
 local function monitorViewport(v)
 	v.DescendantAdded:Connect(function(obj)
 		task.wait()
@@ -281,6 +283,39 @@ local function monitorViewport(v)
 		end
 	end)
 end
+
+local function scanAllViewports()
+	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+		if v:IsA("ViewportFrame") then
+			if dragonActive then
+				for _, obj in pairs(v:GetDescendants()) do
+					if hasDragonName(obj) then
+						setAllTransparency(obj, 1)
+						if obj:IsA("Model") then
+							for _, part in pairs(obj:GetDescendants()) do
+								setAllTransparency(part, 1)
+							end
+						end
+					end
+					local parent = obj.Parent
+					while parent and parent ~= v do
+						if hasDragonName(parent) then
+							setAllTransparency(obj, 1)
+							break
+						end
+						parent = parent.Parent
+					end
+				end
+			end
+		end
+	end
+end
+
+RunService.Heartbeat:Connect(function()
+	if dragonActive then
+		scanAllViewports()
+	end
+end)
 
 local lastApply = 0
 
