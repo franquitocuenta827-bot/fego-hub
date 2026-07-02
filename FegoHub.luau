@@ -17,8 +17,8 @@ ScreenGui.Parent = CoreGui
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 200, 0, 200)
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -100)
+MainFrame.Size = UDim2.new(0, 200, 0, 240)
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -120)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -71,41 +71,42 @@ Divider.Parent = MainFrame
 
 local TabMain = Instance.new("TextButton")
 TabMain.Name = "TabMain"
-TabMain.Size = UDim2.new(0.45, 0, 0, 22)
+TabMain.Size = UDim2.new(0.45, 0, 0, 28)
 TabMain.Position = UDim2.new(0.03, 0, 0, 50)
 TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
 TabMain.Text = "MAIN"
 TabMain.TextColor3 = Color3.new(1, 1, 1)
 TabMain.Font = Enum.Font.GothamBold
-TabMain.TextSize = 11
+TabMain.TextSize = 13
 TabMain.AutoButtonColor = false
 TabMain.Parent = MainFrame
 
 local TabMainCorner = Instance.new("UICorner")
-TabMainCorner.CornerRadius = UDim.new(0, 6)
+TabMainCorner.CornerRadius = UDim.new(0, 8)
 TabMainCorner.Parent = TabMain
 
 local TabPets = Instance.new("TextButton")
 TabPets.Name = "TabPets"
-TabPets.Size = UDim2.new(0.45, 0, 0, 22)
+TabPets.Size = UDim2.new(0.45, 0, 0, 28)
 TabPets.Position = UDim2.new(0.52, 0, 0, 50)
 TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
 TabPets.Text = "PETS"
 TabPets.TextColor3 = Color3.fromRGB(200, 200, 210)
 TabPets.Font = Enum.Font.GothamBold
-TabPets.TextSize = 11
+TabPets.TextSize = 13
 TabPets.AutoButtonColor = false
 TabPets.Parent = MainFrame
 
 local TabPetsCorner = Instance.new("UICorner")
-TabPetsCorner.CornerRadius = UDim.new(0, 6)
+TabPetsCorner.CornerRadius = UDim.new(0, 8)
 TabPetsCorner.Parent = TabPets
 
 local ContentFrame = Instance.new("Frame")
 ContentFrame.Name = "ContentFrame"
-ContentFrame.Size = UDim2.new(1, 0, 1, -80)
-ContentFrame.Position = UDim2.new(0, 0, 0, 78)
+ContentFrame.Size = UDim2.new(1, 0, 1, -88)
+ContentFrame.Position = UDim2.new(0, 0, 0, 86)
 ContentFrame.BackgroundTransparency = 1
+ContentFrame.ClipsDescendants = true
 ContentFrame.Parent = MainFrame
 
 local MainContent = Instance.new("Frame")
@@ -159,8 +160,11 @@ local function UpdateButtonStyle(btn, active)
 	btn.TextColor3 = active and Color3.fromRGB(180, 255, 180) or Color3.fromRGB(200, 200, 210)
 end
 
-local function UpdateTabs(showMain)
-	if showMain then
+local activeTab = "main"
+
+local function SwitchTab(tab)
+	activeTab = tab
+	if tab == "main" then
 		MainContent.Visible = true
 		PetsContent.Visible = false
 		TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
@@ -177,8 +181,13 @@ local function UpdateTabs(showMain)
 	end
 end
 
-TabMain.MouseButton1Click:Connect(function() UpdateTabs(true) end)
-TabPets.MouseButton1Click:Connect(function() UpdateTabs(false) end)
+TabMain.MouseButton1Click:Connect(function()
+	SwitchTab("main")
+end)
+
+TabPets.MouseButton1Click:Connect(function()
+	SwitchTab("pets")
+end)
 
 local freezeActive = false
 local disappearActive = false
