@@ -254,13 +254,13 @@ LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
 	local now = tick()
 	if now - lastApply < 1 then return end
 	lastApply = now
-	task.wait(0.5)
-	applyToViewport(obj)
+	if dragonActive or disappearActive or freezeActive then
+		applyToViewport(obj)
+	end
 end)
 
 LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
 	if not disappearActive then return end
-	task.wait(0.1)
 	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
 		local text = string.lower(obj.Text)
 		if string.find(text, "brainrot") or string.find(text, "skibidi") or string.find(text, "rizz") then
