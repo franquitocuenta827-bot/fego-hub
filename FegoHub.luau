@@ -147,13 +147,36 @@ local function setAllTransparency(obj, value)
 	end
 end
 
+local function applyToViewport(v)
+	for _, obj in pairs(v:GetDescendants()) do
+		if dragonActive and hasDragonName(obj) then
+			setAllTransparency(obj, 1)
+			if obj:IsA("Model") then
+				for _, part in pairs(obj:GetDescendants()) do
+					setAllTransparency(part, 1)
+				end
+			end
+		elseif disappearActive then
+			setAllTransparency(obj, 1)
+		end
+		if freezeActive then
+			if obj:IsA("Animator") then
+				for _, track in pairs(obj:GetPlayingAnimationTracks()) do
+					track:AdjustSpeed(0)
+				end
+			elseif obj:IsA("Humanoid") then
+				obj.WalkSpeed = 0
+				obj.JumpPower = 0
+			elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
+				obj.Anchored = true
+			end
+		end
+	end
+end
+
 local function applyAction(mode, state)
 	for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 		if v:IsA("ViewportFrame") then
-			local isOpponent = false
-			if v.AbsolutePosition.X > (Camera.ViewportSize.X / 2) then
-				isOpponent = true
-			end
 			if mode == "dragon" then
 				for _, obj in pairs(v:GetDescendants()) do
 					if hasDragonName(obj) then
@@ -181,22 +204,6 @@ local function applyAction(mode, state)
 					elseif obj:IsA("BasePart") or obj:IsA("MeshPart") then
 						obj.Anchored = state
 					end
-				end
-			end
-		end
-	end
-	if mode == "disappear" and state then
-		for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-			if gui:IsA("TextLabel") or gui:IsA("TextButton") then
-				local text = string.lower(gui.Text)
-				if string.find(text, "brainrot") or string.find(text, "skibidi") or string.find(text, "rizz") then
-					gui.Visible = false
-				end
-			end
-			if gui:IsA("Frame") or gui:IsA("ImageLabel") or gui:IsA("ImageButton") then
-				local name = string.lower(gui.Name)
-				if string.find(name, "brainrot") or string.find(name, "skibidi") then
-					gui.Visible = false
 				end
 			end
 		end
@@ -245,16 +252,8 @@ local lastApply = 0
 LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
 	if not obj:IsA("ViewportFrame") then return end
 	local now = tick()
-	if now - lastApply < 0.5 then return end
+	if now - lastApply < 1 then return end
 	lastApply = now
-	task.wait(0.3)
-	if freezeActive then
-		applyAction("freeze", true)
-	end
-	if disappearActive then
-		applyAction("disappear", true)
-	end
-	if dragonActive then
-		applyAction("dragon", true)
-	end
+	task.wait(0.5)
+	applyToViewport(obj)
 end)
