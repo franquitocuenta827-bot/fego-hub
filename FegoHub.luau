@@ -240,8 +240,14 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	end
 end)
 
+local lastApply = 0
+
 LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
-	task.wait(0.2)
+	if not obj:IsA("ViewportFrame") then return end
+	local now = tick()
+	if now - lastApply < 0.5 then return end
+	lastApply = now
+	task.wait(0.3)
 	if freezeActive then
 		applyAction("freeze", true)
 	end
