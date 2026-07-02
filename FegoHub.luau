@@ -257,3 +257,20 @@ LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
 	task.wait(0.5)
 	applyToViewport(obj)
 end)
+
+LocalPlayer.PlayerGui.DescendantAdded:Connect(function(obj)
+	if not disappearActive then return end
+	task.wait(0.1)
+	if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+		local text = string.lower(obj.Text)
+		if string.find(text, "brainrot") or string.find(text, "skibidi") or string.find(text, "rizz") then
+			obj.Visible = false
+		end
+	end
+	if obj:IsA("Frame") or obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+		local name = string.lower(obj.Name)
+		if string.find(name, "brainrot") or string.find(name, "skibidi") then
+			obj.Visible = false
+		end
+	end
+end)
