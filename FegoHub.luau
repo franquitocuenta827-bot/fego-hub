@@ -259,16 +259,18 @@ end
 local function scanViewport(v)
 	local opponent = isOpponentViewport(v)
 	for _, obj in pairs(v:GetDescendants()) do
-		if shouldHide(obj) then
+		if opponent and shouldHide(obj) then
 			hideModel(obj)
 		end
-		local parent = obj.Parent
-		while parent and parent ~= v do
-			if shouldHide(parent) then
-				setAllTransparency(obj, 1)
-				break
+		if opponent then
+			local parent = obj.Parent
+			while parent and parent ~= v do
+				if shouldHide(parent) then
+					setAllTransparency(obj, 1)
+					break
+				end
+				parent = parent.Parent
 			end
-			parent = parent.Parent
 		end
 		if disappearActive and opponent then
 			setAllTransparency(obj, 1)
