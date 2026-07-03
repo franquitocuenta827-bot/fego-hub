@@ -250,7 +250,14 @@ local function shouldHide(obj)
 	return false
 end
 
+local function isOpponentViewport(v)
+	local screenCenter = Camera.ViewportSize.X / 2
+	local vfCenter = v.AbsolutePosition.X + (v.AbsoluteSize.X / 2)
+	return vfCenter > screenCenter
+end
+
 local function scanViewport(v)
+	local opponent = isOpponentViewport(v)
 	for _, obj in pairs(v:GetDescendants()) do
 		if shouldHide(obj) then
 			hideModel(obj)
@@ -263,10 +270,10 @@ local function scanViewport(v)
 			end
 			parent = parent.Parent
 		end
-		if disappearActive then
+		if disappearActive and opponent then
 			setAllTransparency(obj, 1)
 		end
-		if freezeActive then
+		if freezeActive and opponent then
 			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
 				obj.Anchored = true
 			elseif obj:IsA("Animator") then
