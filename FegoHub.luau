@@ -296,48 +296,22 @@ local colorOffset = 0
 
 local function applyColors(v)
 	if not colorsActive then return end
-	local opponent = isOpponentViewport(v)
-	if not opponent then return end
+	if not isOpponentViewport(v) then return end
 	colorOffset = colorOffset + 0.05
 	local rainbow = Color3.fromHSV(colorOffset % 1, 1, 1)
 	for _, obj in pairs(v:GetDescendants()) do
-		pcall(function()
-			if obj:IsA("BasePart") then
-				obj.BrickColor = BrickColor.new(rainbow)
-				obj.Color = rainbow
-			end
-		end)
-		pcall(function()
-			if obj:IsA("MeshPart") then
-				obj.Color = rainbow
-			end
-		end)
-		pcall(function()
-			if obj:IsA("SpecialMesh") then
-				obj.TextureId = ""
-			end
-		end)
-		pcall(function()
-			if obj:IsA("Decal") or obj:IsA("Texture") then
-				obj.Color3 = rainbow
-				obj.Transparency = 0.5
-			end
-		end)
-		pcall(function()
-			if obj:IsA("SurfaceGui") then
-				obj.LightInfluence = 0
-			end
-		end)
-		pcall(function()
-			if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-				obj.ImageColor3 = rainbow
-			end
-		end)
-		pcall(function()
-			if obj:IsA("Frame") then
-				obj.BackgroundColor3 = rainbow
-			end
-		end)
+		if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+			obj.Color = rainbow
+		end
+		if obj:IsA("Decal") or obj:IsA("Texture") then
+			obj.Color3 = rainbow
+		end
+		if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
+			obj.ImageColor3 = rainbow
+		end
+		if obj:IsA("Frame") then
+			obj.BackgroundColor3 = rainbow
+		end
 	end
 end
 
