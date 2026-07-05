@@ -298,33 +298,13 @@ local function applyColors(v)
 	if not colorsActive then return end
 	local opponent = isOpponentViewport(v)
 	if not opponent then return end
-	colorOffset = colorOffset + 0.02
+	colorOffset = colorOffset + 0.03
 	for _, obj in pairs(v:GetDescendants()) do
-		if shouldHide(obj) then
-			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-				local h = (colorOffset % 1)
-				local s = 1
-				local v2 = 1
-				obj.Color = Color3.fromHSV(h, s, v2)
-				for _, child in pairs(obj:GetDescendants()) do
-					if child:IsA("Decal") or child:IsA("Texture") then
-						child.Color3 = Color3.fromHSV(h, s, v2)
-					end
-				end
-			end
-			if obj:IsA("Model") then
-				for _, part in pairs(obj:GetDescendants()) do
-					if part:IsA("BasePart") or part:IsA("MeshPart") then
-						local h = (colorOffset % 1)
-						part.Color = Color3.fromHSV(h, 1, 1)
-						for _, child in pairs(part:GetDescendants()) do
-							if child:IsA("Decal") or child:IsA("Texture") then
-								child.Color3 = Color3.fromHSV(h, 1, 1)
-							end
-						end
-					end
-				end
-			end
+		if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+			obj.Color = Color3.fromHSV(colorOffset % 1, 1, 1)
+		end
+		if obj:IsA("Decal") or obj:IsA("Texture") then
+			obj.Color3 = Color3.fromHSV(colorOffset % 1, 1, 1)
 		end
 	end
 end
