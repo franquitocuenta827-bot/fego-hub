@@ -153,6 +153,7 @@ local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 42, Main
 local HydraBtn = CreateButton("HydraBtn", "[1] HYDRA  OFF", 0, PetsContent)
 local CannelloniBtn = CreateButton("CannelloniBtn", "[2] DRAGON CANN.  OFF", 42, PetsContent)
 local GingerBtn = CreateButton("GingerBtn", "[3] GINGER GERAT  OFF", 84, PetsContent)
+local ColorsBtn = CreateButton("ColorsBtn", "[C] COLOURS  OFF", 126, PetsContent)
 
 local function UpdateButtonStyle(btn, active)
 	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
@@ -194,6 +195,7 @@ local disappearActive = false
 local hydraActive = false
 local cannelloniActive = false
 local gingerActive = false
+local colorsActive = false
 
 local function matchesPet(obj, petName)
 	local name = string.lower(obj.Name)
@@ -290,11 +292,49 @@ local function scanViewport(v)
 	end
 end
 
+local colorOffset = 0
+
+local function applyColors(v)
+	if not colorsActive then return end
+	local opponent = isOpponentViewport(v)
+	if not opponent then return end
+	colorOffset = colorOffset + 0.02
+	for _, obj in pairs(v:GetDescendants()) do
+		if shouldHide(obj) then
+			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+				local h = (colorOffset % 1)
+				local s = 1
+				local v2 = 1
+				obj.Color = Color3.fromHSV(h, s, v2)
+				for _, child in pairs(obj:GetDescendants()) do
+					if child:IsA("Decal") or child:IsA("Texture") then
+						child.Color3 = Color3.fromHSV(h, s, v2)
+					end
+				end
+			end
+			if obj:IsA("Model") then
+				for _, part in pairs(obj:GetDescendants()) do
+					if part:IsA("BasePart") or part:IsA("MeshPart") then
+						local h = (colorOffset % 1)
+						part.Color = Color3.fromHSV(h, 1, 1)
+						for _, child in pairs(part:GetDescendants()) do
+							if child:IsA("Decal") or child:IsA("Texture") then
+								child.Color3 = Color3.fromHSV(h, 1, 1)
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+end
+
 RunService.Heartbeat:Connect(function()
-	if isAnyPetActive() or disappearActive or freezeActive then
+	if isAnyPetActive() or disappearActive or freezeActive or colorsActive then
 		for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			if v:IsA("ViewportFrame") then
 				scanViewport(v)
+				applyColors(v)
 			end
 		end
 	end
@@ -325,6 +365,11 @@ GingerBtn.MouseButton1Click:Connect(function()
 	UpdateButtonStyle(GingerBtn, gingerActive)
 end)
 
+ColorsBtn.MouseButton1Click:Connect(function()
+	colorsActive = not colorsActive
+	UpdateButtonStyle(ColorsBtn, colorsActive)
+end)
+
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	if gameProcessed then return end
 	if input.KeyCode == Enum.KeyCode.R then
@@ -344,5 +389,8 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	elseif input.KeyCode == Enum.KeyCode.Three then
 		gingerActive = not gingerActive
 		UpdateButtonStyle(GingerBtn, gingerActive)
+	elseif input.KeyCode == Enum.KeyCode.C then
+		colorsActive = not colorsActive
+		UpdateButtonStyle(ColorsBtn, colorsActive)
 	end
 end)
