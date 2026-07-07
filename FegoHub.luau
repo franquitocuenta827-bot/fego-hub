@@ -294,8 +294,6 @@ RunService.Heartbeat:Connect(function()
 								end
 							end)
 						end
-					elseif not destructOn then
-						vf.BackgroundTransparency = 0
 					end
 				end
 				if opp then
