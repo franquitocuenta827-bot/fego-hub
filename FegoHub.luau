@@ -6,18 +6,19 @@ local Camera = workspace.CurrentCamera
 
 local VERSION = "2.12"
 
-if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
-	LocalPlayer.PlayerGui["FEGO"]:Destroy()
-end
+pcall(function()
+	if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
+		LocalPlayer.PlayerGui["FEGO"]:Destroy()
+	end
+end)
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FEGO"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 9999
-ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+ScreenGui.Parent = LocalPlayer.PlayerGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0, 200, 0, 240)
 MainFrame.Position = UDim2.new(0.5, -100, 0.5, -120)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
@@ -71,7 +72,6 @@ Divider.BorderSizePixel = 0
 Divider.Parent = MainFrame
 
 local TabMain = Instance.new("TextButton")
-TabMain.Name = "TabMain"
 TabMain.Size = UDim2.new(0.45, 0, 0, 28)
 TabMain.Position = UDim2.new(0.03, 0, 0, 50)
 TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
@@ -87,7 +87,6 @@ TabMainCorner.CornerRadius = UDim.new(0, 8)
 TabMainCorner.Parent = TabMain
 
 local TabPets = Instance.new("TextButton")
-TabPets.Name = "TabPets"
 TabPets.Size = UDim2.new(0.45, 0, 0, 28)
 TabPets.Position = UDim2.new(0.52, 0, 0, 50)
 TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
@@ -103,7 +102,6 @@ TabPetsCorner.CornerRadius = UDim.new(0, 8)
 TabPetsCorner.Parent = TabPets
 
 local ContentFrame = Instance.new("Frame")
-ContentFrame.Name = "ContentFrame"
 ContentFrame.Size = UDim2.new(1, 0, 1, -88)
 ContentFrame.Position = UDim2.new(0, 0, 0, 86)
 ContentFrame.BackgroundTransparency = 1
@@ -111,13 +109,11 @@ ContentFrame.ClipsDescendants = true
 ContentFrame.Parent = MainFrame
 
 local MainContent = Instance.new("Frame")
-MainContent.Name = "MainContent"
 MainContent.Size = UDim2.new(1, 0, 1, 0)
 MainContent.BackgroundTransparency = 1
 MainContent.Parent = ContentFrame
 
 local PetsContent = Instance.new("Frame")
-PetsContent.Name = "PetsContent"
 PetsContent.Size = UDim2.new(1, 0, 1, 0)
 PetsContent.BackgroundTransparency = 1
 PetsContent.Visible = false
@@ -135,16 +131,13 @@ local function CreateButton(name, text, yPos, parent)
 	Button.TextSize = 12
 	Button.AutoButtonColor = false
 	Button.Parent = parent
-
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0, 8)
 	corner.Parent = Button
-
 	local stroke = Instance.new("UIStroke")
 	stroke.Color = Color3.fromRGB(50, 30, 80)
 	stroke.Thickness = 1
 	stroke.Parent = Button
-
 	return Button
 end
 
@@ -164,33 +157,22 @@ local function UpdateButtonStyle(btn, active)
 	btn.TextColor3 = active and Color3.fromRGB(180, 255, 180) or Color3.fromRGB(200, 200, 210)
 end
 
-local activeTab = "main"
-
-local function SwitchTab(tab)
-	activeTab = tab
-	if tab == "main" then
-		MainContent.Visible = true
-		PetsContent.Visible = false
-		TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
-		TabMain.TextColor3 = Color3.new(1, 1, 1)
-		TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
-		TabPets.TextColor3 = Color3.fromRGB(200, 200, 210)
-	else
-		MainContent.Visible = false
-		PetsContent.Visible = true
-		TabPets.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
-		TabPets.TextColor3 = Color3.new(1, 1, 1)
-		TabMain.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
-		TabMain.TextColor3 = Color3.fromRGB(200, 200, 210)
-	end
-end
-
 TabMain.MouseButton1Click:Connect(function()
-	SwitchTab("main")
+	MainContent.Visible = true
+	PetsContent.Visible = false
+	TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
+	TabMain.TextColor3 = Color3.new(1, 1, 1)
+	TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+	TabPets.TextColor3 = Color3.fromRGB(200, 200, 210)
 end)
 
 TabPets.MouseButton1Click:Connect(function()
-	SwitchTab("pets")
+	MainContent.Visible = false
+	PetsContent.Visible = true
+	TabPets.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
+	TabPets.TextColor3 = Color3.new(1, 1, 1)
+	TabMain.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+	TabMain.TextColor3 = Color3.fromRGB(200, 200, 210)
 end)
 
 local freezeActive = false
@@ -203,38 +185,23 @@ local gingerActive = false
 local colorsActive = false
 
 local function matchesPet(obj, petName)
-	local name = string.lower(obj.Name)
-	if string.find(name, petName) then
-		return true
-	end
-	if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-		for _, child in pairs(obj:GetChildren()) do
-			if child:IsA("BillboardGui") or child:IsA("SurfaceGui") then
-				for _, label in pairs(child:GetDescendants()) do
-					if label:IsA("TextLabel") then
-						if string.find(string.lower(label.Text), petName) then
-							return true
-						end
-					end
-				end
-			end
-		end
-	end
-	return false
+	local success, result = pcall(function()
+		local name = string.lower(obj.Name)
+		if string.find(name, petName) then return true end
+		return false
+	end)
+	return success and result
 end
 
 local function setAllTransparency(obj, value)
-	if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-		obj.LocalTransparencyModifier = value
-		obj.Transparency = value
-		obj.CastShadow = value < 1
-	elseif obj:IsA("Decal") or obj:IsA("Texture") then
-		obj.Transparency = value
-	elseif obj:IsA("ParticleEmitter") or obj:IsA("Trail") or obj:IsA("Beam") then
-		obj.Enabled = value < 1
-	elseif obj:IsA("Sound") then
-		obj.Volume = value < 1 and 1 or 0
-	end
+	pcall(function()
+		if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+			obj.LocalTransparencyModifier = value
+			obj.Transparency = value
+		elseif obj:IsA("Decal") or obj:IsA("Texture") then
+			obj.Transparency = value
+		end
+	end)
 end
 
 local function hideModel(obj)
@@ -246,10 +213,6 @@ local function hideModel(obj)
 	end
 end
 
-local function isAnyPetActive()
-	return hydraActive or cannelloniActive or gingerActive
-end
-
 local function shouldHide(obj)
 	if hydraActive and matchesPet(obj, "hydra") then return true end
 	if cannelloniActive and matchesPet(obj, "cannelloni") then return true end
@@ -258,33 +221,17 @@ local function shouldHide(obj)
 end
 
 local function isOpponentViewport(v)
-	local screenCenter = Camera.ViewportSize.X / 2
-	local vfCenter = v.AbsolutePosition.X + (v.AbsoluteSize.X / 2)
-	return vfCenter > screenCenter
+	local success, result = pcall(function()
+		local screenCenter = Camera.ViewportSize.X / 2
+		local vfCenter = v.AbsolutePosition.X + (v.AbsoluteSize.X / 2)
+		return vfCenter > screenCenter
+	end)
+	return success and result
 end
 
-local spinOffset = 0
 local spinOriginals = {}
 local flipOriginals = {}
-
-local function restoreSpin()
-	for obj, orig in pairs(spinOriginals) do
-		pcall(function()
-			obj.CFrame = orig
-		end)
-	end
-	spinOriginals = {}
-	spinOffset = 0
-end
-
-local function restoreFlip()
-	for obj, orig in pairs(flipOriginals) do
-		pcall(function()
-			obj.CFrame = orig
-		end)
-	end
-	flipOriginals = {}
-end
+local spinOffset = 0
 
 local function scanViewport(v)
 	local opponent = isOpponentViewport(v)
@@ -292,66 +239,41 @@ local function scanViewport(v)
 		spinOffset = spinOffset + 0.1
 	end
 	for _, obj in pairs(v:GetDescendants()) do
-		if opponent and shouldHide(obj) then
-			hideModel(obj)
-		end
-		if opponent then
-			local parent = obj.Parent
-			while parent and parent ~= v do
-				if shouldHide(parent) then
-					setAllTransparency(obj, 1)
-					break
+		pcall(function()
+			if opponent and shouldHide(obj) then
+				hideModel(obj)
+			end
+			if disappearActive and opponent then
+				setAllTransparency(obj, 1)
+			end
+			if freezeActive and opponent then
+				if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+					obj.Anchored = true
 				end
-				parent = parent.Parent
 			end
-		end
-		if disappearActive and opponent then
-			setAllTransparency(obj, 1)
-		end
-		if freezeActive and opponent then
-			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-				obj.Anchored = true
-			elseif obj:IsA("Animator") then
-				for _, track in pairs(obj:GetPlayingAnimationTracks()) do
-					track:AdjustSpeed(0)
+			if spinActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+				if not spinOriginals[obj] then
+					spinOriginals[obj] = obj.CFrame
 				end
-			elseif obj:IsA("Humanoid") then
-				obj.WalkSpeed = 0
-				obj.JumpPower = 0
+				obj.CFrame = spinOriginals[obj] * CFrame.Angles(0, math.rad(spinOffset * 100), 0)
 			end
-		end
-		if spinActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
-			if not spinOriginals[obj] then
-				spinOriginals[obj] = obj.CFrame
+			if flipActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+				if not flipOriginals[obj] then
+					flipOriginals[obj] = obj.CFrame
+				end
+				obj.CFrame = flipOriginals[obj] * CFrame.Angles(math.rad(180), 0, 0)
 			end
-			local orig = spinOriginals[obj]
-			pcall(function()
-				obj.CFrame = orig * CFrame.Angles(0, math.rad(spinOffset * 100), 0)
-			end)
-		end
-		if flipActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
-			if not flipOriginals[obj] then
-				flipOriginals[obj] = obj.CFrame
-			end
-			local orig = flipOriginals[obj]
-			pcall(function()
-				obj.CFrame = orig * CFrame.Angles(math.rad(180), 0, 0)
-			end)
-		end
+		end)
 	end
 	if not spinActive then
 		for obj, orig in pairs(spinOriginals) do
-			pcall(function()
-				obj.CFrame = orig
-			end)
+			pcall(function() obj.CFrame = orig end)
 		end
 		spinOriginals = {}
 	end
 	if not flipActive then
 		for obj, orig in pairs(flipOriginals) do
-			pcall(function()
-				obj.CFrame = orig
-			end)
+			pcall(function() obj.CFrame = orig end)
 		end
 		flipOriginals = {}
 	end
@@ -365,31 +287,13 @@ local function applyColors(v)
 	colorOffset = colorOffset + 0.05
 	local rainbow = Color3.fromHSV(colorOffset % 1, 1, 1)
 	for _, obj in pairs(v:GetDescendants()) do
-		if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-			obj.Color = rainbow
-		end
-		if obj:IsA("Decal") or obj:IsA("Texture") then
-			obj.Color3 = rainbow
-		end
-		if obj:IsA("ImageLabel") or obj:IsA("ImageButton") then
-			obj.ImageColor3 = rainbow
-		end
-		if obj:IsA("Frame") then
-			obj.BackgroundColor3 = rainbow
-		end
+		pcall(function()
+			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+				obj.Color = rainbow
+			end
+		end)
 	end
 end
-
-RunService.Heartbeat:Connect(function()
-	if isAnyPetActive() or disappearActive or freezeActive or colorsActive or spinActive or flipActive then
-		for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-			if v:IsA("ViewportFrame") then
-				scanViewport(v)
-				applyColors(v)
-			end
-		end
-	end
-end)
 
 FreezeBtn.MouseButton1Click:Connect(function()
 	freezeActive = not freezeActive
@@ -404,7 +308,11 @@ end)
 SpinBtn.MouseButton1Click:Connect(function()
 	spinActive = not spinActive
 	if not spinActive then
-		restoreSpin()
+		for obj, orig in pairs(spinOriginals) do
+			pcall(function() obj.CFrame = orig end)
+		end
+		spinOriginals = {}
+		spinOffset = 0
 	end
 	UpdateButtonStyle(SpinBtn, spinActive)
 end)
@@ -412,7 +320,10 @@ end)
 FlipBtn.MouseButton1Click:Connect(function()
 	flipActive = not flipActive
 	if not flipActive then
-		restoreFlip()
+		for obj, orig in pairs(flipOriginals) do
+			pcall(function() obj.CFrame = orig end)
+		end
+		flipOriginals = {}
 	end
 	UpdateButtonStyle(FlipBtn, flipActive)
 end)
@@ -450,13 +361,20 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	elseif input.KeyCode == Enum.KeyCode.X then
 		spinActive = not spinActive
 		if not spinActive then
-			restoreSpin()
+			for obj, orig in pairs(spinOriginals) do
+				pcall(function() obj.CFrame = orig end)
+			end
+			spinOriginals = {}
+			spinOffset = 0
 		end
 		UpdateButtonStyle(SpinBtn, spinActive)
 	elseif input.KeyCode == Enum.KeyCode.B then
 		flipActive = not flipActive
 		if not flipActive then
-			restoreFlip()
+			for obj, orig in pairs(flipOriginals) do
+				pcall(function() obj.CFrame = orig end)
+			end
+			flipOriginals = {}
 		end
 		UpdateButtonStyle(FlipBtn, flipActive)
 	elseif input.KeyCode == Enum.KeyCode.One then
@@ -471,5 +389,16 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	elseif input.KeyCode == Enum.KeyCode.C then
 		colorsActive = not colorsActive
 		UpdateButtonStyle(ColorsBtn, colorsActive)
+	end
+end)
+
+RunService.Heartbeat:Connect(function()
+	if freezeActive or disappearActive or spinActive or flipActive or colorsActive or hydraActive or cannelloniActive or gingerActive then
+		for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+			if v:IsA("ViewportFrame") then
+				scanViewport(v)
+				applyColors(v)
+			end
+		end
 	end
 end)
