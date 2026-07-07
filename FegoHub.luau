@@ -95,29 +95,29 @@ PetsContent.Parent = ContentFrame
 
 local function CreateButton(text, yPos, parent)
 	local b = Instance.new("TextButton")
-	b.Size = UDim2.new(0.86, 0, 0, 34)
+	b.Size = UDim2.new(0.86, 0, 0, 28)
 	b.Position = UDim2.new(0.07, 0, 0, yPos)
 	b.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
 	b.Text = text
 	b.TextColor3 = Color3.fromRGB(200, 200, 210)
 	b.Font = Enum.Font.GothamSemibold
-	b.TextSize = 12
+	b.TextSize = 11
 	b.AutoButtonColor = false
 	b.Parent = parent
-	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 6)
 	return b
 end
 
 local FreezeBtn = CreateButton("[Y] FREEZE  OFF", 0, MainContent)
-local DisappearBtn = CreateButton("[G] DISAPPEAR  OFF", 42, MainContent)
-local SpinBtn = CreateButton("[X] SPIN  OFF", 84, MainContent)
-local FlipBtn = CreateButton("[B] FLIP  OFF", 126, MainContent)
-local DestructBtn = CreateButton("[V] DESTRUCT  OFF", 168, MainContent)
+local DisappearBtn = CreateButton("[G] DISAPPEAR  OFF", 34, MainContent)
+local SpinBtn = CreateButton("[X] SPIN  OFF", 68, MainContent)
+local FlipBtn = CreateButton("[B] FLIP  OFF", 102, MainContent)
+local DestructBtn = CreateButton("[V] DESTRUCT  OFF", 136, MainContent)
 
 local HydraBtn = CreateButton("[1] HYDRA  OFF", 0, PetsContent)
-local CannelloniBtn = CreateButton("[2] DRAGON CANN.  OFF", 42, PetsContent)
-local GingerBtn = CreateButton("[3] GINGER GERAT  OFF", 84, PetsContent)
-local ColorsBtn = CreateButton("[C] COLOURS  OFF", 126, PetsContent)
+local CannelloniBtn = CreateButton("[2] DRAGON CANN.  OFF", 34, PetsContent)
+local GingerBtn = CreateButton("[3] GINGER GERAT  OFF", 68, PetsContent)
+local ColorsBtn = CreateButton("[C] COLOURS  OFF", 102, PetsContent)
 
 local function ToggleBtn(btn, state)
 	btn.Text = state and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
