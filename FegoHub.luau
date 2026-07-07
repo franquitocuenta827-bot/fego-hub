@@ -264,7 +264,7 @@ local spinOffset = 0
 local function scanViewport(v)
 	local opponent = isOpponentViewport(v)
 	if spinActive and opponent then
-		spinOffset = spinOffset + 0.2
+		spinOffset = spinOffset + 0.5
 	end
 	for _, obj in pairs(v:GetDescendants()) do
 		if opponent and shouldHide(obj) then
@@ -297,7 +297,13 @@ local function scanViewport(v)
 		end
 		if spinActive and opponent then
 			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-				obj.CFrame = obj.CFrame * CFrame.Angles(0, math.rad(spinOffset), 0)
+				local rx = math.sin(spinOffset * 3) * 0.8
+				local ry = math.cos(spinOffset * 2) * 360
+				local rz = math.sin(spinOffset * 5) * 0.5
+				local ox = math.sin(spinOffset * 7) * 2
+				local oy = math.abs(math.sin(spinOffset * 4)) * 3
+				local oz = math.cos(spinOffset * 6) * 2
+				obj.CFrame = obj.CFrame * CFrame.Angles(rx, math.rad(ry), rz) + Vector3.new(ox, oy, oz)
 			end
 		end
 	end
