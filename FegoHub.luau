@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.14"
+local VERSION = "2.15"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -17,8 +17,8 @@ ScreenGui.DisplayOrder = 9999
 ScreenGui.Parent = LocalPlayer.PlayerGui
 
 local MainFrame = Instance.new("Frame")
-MainFrame.Size = UDim2.new(0, 200, 0, 240)
-MainFrame.Position = UDim2.new(0.5, -100, 0.5, -120)
+MainFrame.Size = UDim2.new(0, 200, 0, 280)
+MainFrame.Position = UDim2.new(0.5, -100, 0.5, -140)
 MainFrame.BackgroundColor3 = Color3.fromRGB(18, 18, 24)
 MainFrame.BorderSizePixel = 0
 MainFrame.Active = true
@@ -254,12 +254,29 @@ RunService.Heartbeat:Connect(function()
 			end
 		end
 	end
-	if not (freezeOn or disappearOn or spinOn or flipOn or colorsOn or hydraOn or cannelloniOn or gingerOn) then return end
 	for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 		if vf:IsA("ViewportFrame") then
 			local mid = Camera.ViewportSize.X / 2
 			local opp = (vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2) > mid
-			if spinOn and opp then spinT = spinT + 0.1 end
+			if opp then
+				if disappearOn then
+					vf.BackgroundTransparency = 1
+					for _, obj in pairs(vf:GetDescendants()) do
+						pcall(function()
+							if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+								obj.Transparency = 1
+								obj.LocalTransparencyModifier = 1
+							end
+							if obj:IsA("Decal") or obj:IsA("Texture") then
+								obj.Transparency = 1
+							end
+						end)
+					end
+				else
+					vf.BackgroundTransparency = 0
+				end
+			end
+			if freezeOn and opp then spinT = spinT + 0.1 end
 			if colorsOn and opp then colorT = colorT + 0.05 end
 			for _, obj in pairs(vf:GetDescendants()) do
 				pcall(function()
@@ -271,8 +288,7 @@ RunService.Heartbeat:Connect(function()
 					local isPet = isHydra or isCann or isGing
 					if opp then
 						if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
-						if disappearOn and isPart then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
-						if freezeOn and isPart then obj.Anchored = true end
+						if not disappearOn and freezeOn and isPart then obj.Anchored = true end
 						if spinOn and isPart then
 							if not spinOffs[obj] then spinOffs[obj] = obj.CFrame end
 							obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 100), 0)
