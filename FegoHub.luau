@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.9"
+local VERSION = "2.10"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -265,6 +265,7 @@ end
 
 local spinOffset = 0
 local spinOriginals = {}
+local flipOriginals = {}
 
 local function restoreSpin()
 	for obj, orig in pairs(spinOriginals) do
@@ -276,6 +277,17 @@ local function restoreSpin()
 	end
 	spinOriginals = {}
 	spinOffset = 0
+end
+
+local function restoreFlip()
+	for obj, orig in pairs(flipOriginals) do
+		pcall(function()
+			if obj and obj.Parent then
+				obj:PivotTo(orig)
+			end
+		end)
+	end
+	flipOriginals = {}
 end
 
 local function scanViewport(v)
@@ -338,10 +350,10 @@ local function scanViewport(v)
 		for _, obj in pairs(v:GetDescendants()) do
 			if obj:IsA("Model") then
 				local pivot = obj:GetPivot()
-				if not spinOriginals[obj] then
-					spinOriginals[obj] = pivot
+				if not flipOriginals[obj] then
+					flipOriginals[obj] = pivot
 				end
-				local orig = spinOriginals[obj]
+				local orig = flipOriginals[obj]
 				obj:PivotTo(orig * CFrame.Angles(math.rad(180), 0, 0))
 			end
 		end
@@ -354,6 +366,16 @@ local function scanViewport(v)
 			end)
 		end
 		spinOriginals = {}
+	end
+	if not flipActive then
+		for obj, orig in pairs(flipOriginals) do
+			pcall(function()
+				if obj and obj.Parent then
+					obj:PivotTo(orig)
+				end
+			end)
+		end
+		flipOriginals = {}
 	end
 end
 
@@ -412,14 +434,7 @@ end)
 FlipBtn.MouseButton1Click:Connect(function()
 	flipActive = not flipActive
 	if not flipActive then
-		for obj, orig in pairs(spinOriginals) do
-			pcall(function()
-				if obj and obj.Parent then
-					obj:PivotTo(orig)
-				end
-			end)
-		end
-		spinOriginals = {}
+		restoreFlip()
 	end
 	UpdateButtonStyle(FlipBtn, flipActive)
 end)
@@ -463,14 +478,7 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	elseif input.KeyCode == Enum.KeyCode.B then
 		flipActive = not flipActive
 		if not flipActive then
-			for obj, orig in pairs(spinOriginals) do
-				pcall(function()
-					if obj and obj.Parent then
-						obj:PivotTo(orig)
-					end
-				end)
-			end
-			spinOriginals = {}
+			restoreFlip()
 		end
 		UpdateButtonStyle(FlipBtn, flipActive)
 	elseif input.KeyCode == Enum.KeyCode.One then
