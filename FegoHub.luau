@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.11"
+local VERSION = "2.12"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -270,9 +270,7 @@ local flipOriginals = {}
 local function restoreSpin()
 	for obj, orig in pairs(spinOriginals) do
 		pcall(function()
-			if obj and obj.Parent then
-				obj:PivotTo(orig)
-			end
+			obj.CFrame = orig
 		end)
 	end
 	spinOriginals = {}
@@ -282,9 +280,7 @@ end
 local function restoreFlip()
 	for obj, orig in pairs(flipOriginals) do
 		pcall(function()
-			if obj and obj.Parent then
-				obj:PivotTo(orig)
-			end
+			obj.CFrame = orig
 		end)
 	end
 	flipOriginals = {}
@@ -324,45 +320,29 @@ local function scanViewport(v)
 				obj.JumpPower = 0
 			end
 		end
-	end
-	if spinActive and opponent then
-		for _, obj in pairs(v:GetDescendants()) do
-			if obj:IsA("Model") then
-				local pivot = obj:GetPivot()
-				if not spinOriginals[obj] then
-					spinOriginals[obj] = pivot
-				end
-				local orig = spinOriginals[obj]
-				obj:PivotTo(orig * CFrame.Angles(0, math.rad(spinOffset * 100), 0))
+		if spinActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+			if not spinOriginals[obj] then
+				spinOriginals[obj] = obj.CFrame
 			end
-		end
-	else
-		for obj, orig in pairs(spinOriginals) do
+			local orig = spinOriginals[obj]
 			pcall(function()
-				if obj and obj.Parent then
-					obj:PivotTo(orig)
-				end
+				obj.CFrame = orig * CFrame.Angles(0, math.rad(spinOffset * 100), 0)
 			end)
 		end
-		spinOriginals = {}
-	end
-	if flipActive and opponent then
-		for _, obj in pairs(v:GetDescendants()) do
-			if obj:IsA("Model") then
-				local pivot = obj:GetPivot()
-				if not flipOriginals[obj] then
-					flipOriginals[obj] = pivot
-				end
-				local orig = flipOriginals[obj]
-				obj:PivotTo(orig * CFrame.Angles(math.rad(180), 0, 0))
+		if flipActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
+			if not flipOriginals[obj] then
+				flipOriginals[obj] = obj.CFrame
 			end
+			local orig = flipOriginals[obj]
+			pcall(function()
+				obj.CFrame = orig * CFrame.Angles(math.rad(180), 0, 0)
+			end)
 		end
-	elseif not spinActive then
+	end
+	if not spinActive then
 		for obj, orig in pairs(spinOriginals) do
 			pcall(function()
-				if obj and obj.Parent then
-					obj:PivotTo(orig)
-				end
+				obj.CFrame = orig
 			end)
 		end
 		spinOriginals = {}
@@ -370,9 +350,7 @@ local function scanViewport(v)
 	if not flipActive then
 		for obj, orig in pairs(flipOriginals) do
 			pcall(function()
-				if obj and obj.Parent then
-					obj:PivotTo(orig)
-				end
+				obj.CFrame = orig
 			end)
 		end
 		flipOriginals = {}
