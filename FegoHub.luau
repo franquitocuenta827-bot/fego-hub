@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.13"
+local VERSION = "2.14"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -112,6 +112,7 @@ local FreezeBtn = CreateButton("[Y] FREEZE  OFF", 0, MainContent)
 local DisappearBtn = CreateButton("[G] DISAPPEAR  OFF", 42, MainContent)
 local SpinBtn = CreateButton("[X] SPIN  OFF", 84, MainContent)
 local FlipBtn = CreateButton("[B] FLIP  OFF", 126, MainContent)
+local DestructBtn = CreateButton("[V] DESTRUCT  OFF", 168, MainContent)
 
 local HydraBtn = CreateButton("[1] HYDRA  OFF", 0, PetsContent)
 local CannelloniBtn = CreateButton("[2] DRAGON CANN.  OFF", 42, PetsContent)
@@ -142,6 +143,7 @@ local freezeOn = false
 local disappearOn = false
 local spinOn = false
 local flipOn = false
+local destructOn = false
 local hydraOn = false
 local cannelloniOn = false
 local gingerOn = false
@@ -177,6 +179,11 @@ FlipBtn.MouseButton1Click:Connect(function()
 	ToggleBtn(FlipBtn, flipOn)
 end)
 
+DestructBtn.MouseButton1Click:Connect(function()
+	destructOn = not destructOn
+	ToggleBtn(DestructBtn, destructOn)
+end)
+
 UserInputService.InputBegan:Connect(function(input, gpe)
 	if gpe then return end
 	local k = input.KeyCode
@@ -191,6 +198,9 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 		flipOn = not flipOn
 		if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 		ToggleBtn(FlipBtn, flipOn)
+	elseif k == Enum.KeyCode.V then
+		destructOn = not destructOn
+		ToggleBtn(DestructBtn, destructOn)
 	elseif k == Enum.KeyCode.One then hydraOn = not hydraOn; ToggleBtn(HydraBtn, hydraOn)
 	elseif k == Enum.KeyCode.Two then cannelloniOn = not cannelloniOn; ToggleBtn(CannelloniBtn, cannelloniOn)
 	elseif k == Enum.KeyCode.Three then gingerOn = not gingerOn; ToggleBtn(GingerBtn, gingerOn)
@@ -199,6 +209,51 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 end)
 
 RunService.Heartbeat:Connect(function()
+	if destructOn then
+		for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+			pcall(function()
+				if gui:IsA("TextButton") or gui:IsA("ImageButton") then
+					local txt = string.lower(gui.Text)
+					local nm = string.lower(gui.Name)
+					if string.find(txt, "ready") or string.find(txt, "cancel") or string.find(txt, "accept") or string.find(txt, "confirm") or string.find(nm, "ready") or string.find(nm, "cancel") then
+						gui.Active = false
+						gui.AutoButtonColor = false
+						gui.TextTransparency = 1
+						gui.BackgroundTransparency = 1
+						gui.Visible = false
+					end
+				end
+				if gui:IsA("Frame") then
+					local nm = string.lower(gui.Name)
+					if string.find(nm, "ready") or string.find(nm, "cancel") or string.find(nm, "trade") then
+						gui.Active = false
+						gui.BackgroundTransparency = 1
+					end
+				end
+			end)
+		end
+		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+			if vf:IsA("ViewportFrame") then
+				local mid = Camera.ViewportSize.X / 2
+				local opp = (vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2) > mid
+				if opp then
+					for _, obj in pairs(vf:GetDescendants()) do
+						pcall(function()
+							if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+								local nm = string.lower(obj.Name)
+								if string.find(nm, "dragon") or string.find(nm, "cannelloni") or string.find(nm, "hydra") or string.find(nm, "ginger") then
+									obj.Size = Vector3.new(0.01, 0.01, 0.01)
+									obj.CanCollide = false
+									obj.Transparency = 1
+									obj.LocalTransparencyModifier = 1
+								end
+							end
+						end)
+					end
+				end
+			end
+		end
+	end
 	if not (freezeOn or disappearOn or spinOn or flipOn or colorsOn or hydraOn or cannelloniOn or gingerOn) then return end
 	for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 		if vf:IsA("ViewportFrame") then
