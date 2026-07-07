@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.20"
+local VERSION = "2.21"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -210,7 +210,6 @@ end)
 
 RunService.Heartbeat:Connect(function()
 	if destructOn then
-		local mid = Camera.ViewportSize.X / 2
 		for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			pcall(function()
 				if gui:IsA("TextButton") then
@@ -220,12 +219,14 @@ RunService.Heartbeat:Connect(function()
 						gui.Active = false
 						gui.BackgroundTransparency = 1
 						gui.TextTransparency = 1
+						gui.Size = UDim2.new(0, 0, 0, 0)
 					end
 				end
 			end)
 		end
 		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			if vf:IsA("ViewportFrame") then
+				local mid = Camera.ViewportSize.X / 2
 				local vfMid = vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2
 				if vfMid > mid then
 					vf.BackgroundTransparency = 1
@@ -245,7 +246,7 @@ RunService.Heartbeat:Connect(function()
 			pcall(function()
 				if gui:IsA("Frame") then
 					local pos = gui.AbsolutePosition.X + gui.AbsoluteSize.X / 2
-					if pos > mid then
+					if pos > Camera.ViewportSize.X / 2 then
 						gui.BackgroundTransparency = 1
 					end
 				end
