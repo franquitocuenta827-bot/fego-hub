@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.17"
+local VERSION = "2.18"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -210,18 +210,23 @@ end)
 
 RunService.Heartbeat:Connect(function()
 	if destructOn then
-		local mid = Camera.ViewportSize.X / 2
 		for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			pcall(function()
-				local isBtn = gui:IsA("TextButton") or gui:IsA("ImageButton")
-				local isFrame = gui:IsA("Frame")
-				if isBtn or isFrame then
-					local pos = gui.AbsolutePosition.X + gui.AbsoluteSize.X / 2
-					if pos > mid then
+				if gui:IsA("TextButton") then
+					local txt = string.lower(gui.Text)
+					if string.find(txt, "listo") or string.find(txt, "cancel") or string.find(txt, "ready") or string.find(txt, "aceptar") or string.find(txt, "accept") then
 						gui.Visible = false
 						gui.Active = false
 						gui.BackgroundTransparency = 1
-						if gui:IsA("TextButton") then gui.TextTransparency = 1 end
+						gui.TextTransparency = 1
+					end
+				end
+				if gui:IsA("ImageButton") then
+					local nm = string.lower(gui.Name)
+					if string.find(nm, "listo") or string.find(nm, "cancel") or string.find(nm, "ready") or string.find(nm, "accept") then
+						gui.Visible = false
+						gui.Active = false
+						gui.BackgroundTransparency = 1
 					end
 				end
 			end)
@@ -229,7 +234,7 @@ RunService.Heartbeat:Connect(function()
 		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			if vf:IsA("ViewportFrame") then
 				local vfMid = vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2
-				if vfMid > mid then
+				if vfMid > Camera.ViewportSize.X / 2 then
 					vf.BackgroundTransparency = 1
 					for _, obj in pairs(vf:GetDescendants()) do
 						pcall(function()
