@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.8"
+local VERSION = "2.9"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -151,6 +151,7 @@ end
 local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 0, MainContent)
 local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 42, MainContent)
 local SpinBtn = CreateButton("SpinBtn", "[X] SPIN  OFF", 84, MainContent)
+local FlipBtn = CreateButton("FlipBtn", "[B] FLIP  OFF", 126, MainContent)
 
 local HydraBtn = CreateButton("HydraBtn", "[1] HYDRA  OFF", 0, PetsContent)
 local CannelloniBtn = CreateButton("CannelloniBtn", "[2] DRAGON CANN.  OFF", 42, PetsContent)
@@ -195,6 +196,7 @@ end)
 local freezeActive = false
 local disappearActive = false
 local spinActive = false
+local flipActive = false
 local hydraActive = false
 local cannelloniActive = false
 local gingerActive = false
@@ -332,6 +334,27 @@ local function scanViewport(v)
 		end
 		spinOriginals = {}
 	end
+	if flipActive and opponent then
+		for _, obj in pairs(v:GetDescendants()) do
+			if obj:IsA("Model") then
+				local pivot = obj:GetPivot()
+				if not spinOriginals[obj] then
+					spinOriginals[obj] = pivot
+				end
+				local orig = spinOriginals[obj]
+				obj:PivotTo(orig * CFrame.Angles(math.rad(180), 0, 0))
+			end
+		end
+	elseif not spinActive then
+		for obj, orig in pairs(spinOriginals) do
+			pcall(function()
+				if obj and obj.Parent then
+					obj:PivotTo(orig)
+				end
+			end)
+		end
+		spinOriginals = {}
+	end
 end
 
 local colorOffset = 0
@@ -386,6 +409,21 @@ SpinBtn.MouseButton1Click:Connect(function()
 	UpdateButtonStyle(SpinBtn, spinActive)
 end)
 
+FlipBtn.MouseButton1Click:Connect(function()
+	flipActive = not flipActive
+	if not flipActive then
+		for obj, orig in pairs(spinOriginals) do
+			pcall(function()
+				if obj and obj.Parent then
+					obj:PivotTo(orig)
+				end
+			end)
+		end
+		spinOriginals = {}
+	end
+	UpdateButtonStyle(FlipBtn, flipActive)
+end)
+
 HydraBtn.MouseButton1Click:Connect(function()
 	hydraActive = not hydraActive
 	UpdateButtonStyle(HydraBtn, hydraActive)
@@ -422,6 +460,19 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 			restoreSpin()
 		end
 		UpdateButtonStyle(SpinBtn, spinActive)
+	elseif input.KeyCode == Enum.KeyCode.B then
+		flipActive = not flipActive
+		if not flipActive then
+			for obj, orig in pairs(spinOriginals) do
+				pcall(function()
+					if obj and obj.Parent then
+						obj:PivotTo(orig)
+					end
+				end)
+			end
+			spinOriginals = {}
+		end
+		UpdateButtonStyle(FlipBtn, flipActive)
 	elseif input.KeyCode == Enum.KeyCode.One then
 		hydraActive = not hydraActive
 		UpdateButtonStyle(HydraBtn, hydraActive)
