@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.18"
+local VERSION = "2.19"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -230,26 +230,6 @@ RunService.Heartbeat:Connect(function()
 					end
 				end
 			end)
-		end
-		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-			if vf:IsA("ViewportFrame") then
-				local vfMid = vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2
-				if vfMid > Camera.ViewportSize.X / 2 then
-					vf.BackgroundTransparency = 1
-					for _, obj in pairs(vf:GetDescendants()) do
-						pcall(function()
-							if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-								local nm = string.lower(obj.Name)
-								if string.find(nm, "dragon") or string.find(nm, "cannelloni") or string.find(nm, "hydra") or string.find(nm, "ginger") or string.find(nm, "brainrot") then
-									obj.Transparency = 1
-									obj.LocalTransparencyModifier = 1
-									obj.Size = Vector3.new(0.001, 0.001, 0.001)
-								end
-							end
-						end)
-					end
-				end
-			end
 		end
 	end
 	for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
