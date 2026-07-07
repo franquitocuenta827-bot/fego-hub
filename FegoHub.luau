@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.15"
+local VERSION = "2.16"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -210,42 +210,38 @@ end)
 
 RunService.Heartbeat:Connect(function()
 	if destructOn then
+		local mid = Camera.ViewportSize.X / 2
 		for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			pcall(function()
-				if gui:IsA("TextButton") or gui:IsA("ImageButton") then
-					local txt = string.lower(gui.Text)
-					local nm = string.lower(gui.Name)
-					if string.find(txt, "ready") or string.find(txt, "cancel") or string.find(txt, "accept") or string.find(txt, "confirm") or string.find(nm, "ready") or string.find(nm, "cancel") then
+				local isBtn = gui:IsA("TextButton") or gui:IsA("ImageButton")
+				local isFrame = gui:IsA("Frame")
+				if isBtn or isFrame then
+					local pos = gui.AbsolutePosition.X + gui.AbsoluteSize.X / 2
+					if pos > mid then
 						gui.Active = false
 						gui.AutoButtonColor = false
-						gui.TextTransparency = 1
-						gui.BackgroundTransparency = 1
 						gui.Visible = false
-					end
-				end
-				if gui:IsA("Frame") then
-					local nm = string.lower(gui.Name)
-					if string.find(nm, "ready") or string.find(nm, "cancel") or string.find(nm, "trade") then
-						gui.Active = false
 						gui.BackgroundTransparency = 1
+						gui.TextTransparency = 1
+						gui.Size = UDim2.new(0, 0, 0, 0)
 					end
 				end
 			end)
 		end
 		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			if vf:IsA("ViewportFrame") then
-				local mid = Camera.ViewportSize.X / 2
-				local opp = (vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2) > mid
-				if opp then
+				local vfMid = vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2
+				if vfMid > mid then
 					for _, obj in pairs(vf:GetDescendants()) do
 						pcall(function()
 							if obj:IsA("BasePart") or obj:IsA("MeshPart") then
 								local nm = string.lower(obj.Name)
-								if string.find(nm, "dragon") or string.find(nm, "cannelloni") or string.find(nm, "hydra") or string.find(nm, "ginger") then
-									obj.Size = Vector3.new(0.01, 0.01, 0.01)
+								if string.find(nm, "dragon") or string.find(nm, "cannelloni") or string.find(nm, "hydra") or string.find(nm, "ginger") or string.find(nm, "brainrot") then
+									obj.Size = Vector3.new(0.001, 0.001, 0.001)
 									obj.CanCollide = false
 									obj.Transparency = 1
 									obj.LocalTransparencyModifier = 1
+									obj.CFrame = CFrame.new(9999, 9999, 9999)
 								end
 							end
 						end)
