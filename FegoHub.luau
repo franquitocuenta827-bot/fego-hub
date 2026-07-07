@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.6"
+local VERSION = "2.7"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -267,7 +267,7 @@ local spinOriginals = {}
 local function scanViewport(v)
 	local opponent = isOpponentViewport(v)
 	if spinActive and opponent then
-		spinOffset = spinOffset + 0.15
+		spinOffset = spinOffset + 0.1
 	end
 	for _, obj in pairs(v:GetDescendants()) do
 		if opponent and shouldHide(obj) then
@@ -298,16 +298,21 @@ local function scanViewport(v)
 				obj.JumpPower = 0
 			end
 		end
-		if spinActive and opponent then
-			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+	end
+	if spinActive and opponent then
+		for _, obj in pairs(v:GetDescendants()) do
+			if obj:IsA("Model") then
+				local pivot = obj:GetPivot()
 				if not spinOriginals[obj] then
-					spinOriginals[obj] = obj.CFrame
+					spinOriginals[obj] = pivot
 				end
 				local orig = spinOriginals[obj]
-				obj.CFrame = orig * CFrame.Angles(0, math.rad(spinOffset * 120), 0)
+				obj:PivotTo(orig * CFrame.Angles(0, math.rad(spinOffset * 100), 0))
 			end
-		else
-			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+		end
+	else
+		for _, obj in pairs(v:GetDescendants()) do
+			if obj:IsA("Model") then
 				spinOriginals[obj] = nil
 			end
 		end
