@@ -148,6 +148,7 @@ end
 
 local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 0, MainContent)
 local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 42, MainContent)
+local SpinBtn = CreateButton("SpinBtn", "[X] SPIN  OFF", 84, MainContent)
 
 local HydraBtn = CreateButton("HydraBtn", "[1] HYDRA  OFF", 0, PetsContent)
 local CannelloniBtn = CreateButton("CannelloniBtn", "[2] DRAGON CANN.  OFF", 42, PetsContent)
@@ -191,6 +192,7 @@ end)
 
 local freezeActive = false
 local disappearActive = false
+local spinActive = false
 local hydraActive = false
 local cannelloniActive = false
 local gingerActive = false
@@ -257,8 +259,13 @@ local function isOpponentViewport(v)
 	return vfCenter > screenCenter
 end
 
+local spinOffset = 0
+
 local function scanViewport(v)
 	local opponent = isOpponentViewport(v)
+	if spinActive and opponent then
+		spinOffset = spinOffset + 0.2
+	end
 	for _, obj in pairs(v:GetDescendants()) do
 		if opponent and shouldHide(obj) then
 			hideModel(obj)
@@ -288,6 +295,11 @@ local function scanViewport(v)
 				obj.JumpPower = 0
 			end
 		end
+		if spinActive and opponent then
+			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
+				obj.CFrame = obj.CFrame * CFrame.Angles(0, math.rad(spinOffset), 0)
+			end
+		end
 	end
 end
 
@@ -315,7 +327,7 @@ local function applyColors(v)
 end
 
 RunService.Heartbeat:Connect(function()
-	if isAnyPetActive() or disappearActive or freezeActive or colorsActive then
+	if isAnyPetActive() or disappearActive or freezeActive or colorsActive or spinActive then
 		for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			if v:IsA("ViewportFrame") then
 				scanViewport(v)
@@ -333,6 +345,11 @@ end)
 DisappearBtn.MouseButton1Click:Connect(function()
 	disappearActive = not disappearActive
 	UpdateButtonStyle(DisappearBtn, disappearActive)
+end)
+
+SpinBtn.MouseButton1Click:Connect(function()
+	spinActive = not spinActive
+	UpdateButtonStyle(SpinBtn, spinActive)
 end)
 
 HydraBtn.MouseButton1Click:Connect(function()
@@ -365,6 +382,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 	elseif input.KeyCode == Enum.KeyCode.G then
 		disappearActive = not disappearActive
 		UpdateButtonStyle(DisappearBtn, disappearActive)
+	elseif input.KeyCode == Enum.KeyCode.X then
+		spinActive = not spinActive
+		UpdateButtonStyle(SpinBtn, spinActive)
 	elseif input.KeyCode == Enum.KeyCode.One then
 		hydraActive = not hydraActive
 		UpdateButtonStyle(HydraBtn, hydraActive)
