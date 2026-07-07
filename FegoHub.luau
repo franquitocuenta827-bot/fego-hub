@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.7"
+local VERSION = "2.8"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -264,6 +264,18 @@ end
 local spinOffset = 0
 local spinOriginals = {}
 
+local function restoreSpin()
+	for obj, orig in pairs(spinOriginals) do
+		pcall(function()
+			if obj and obj.Parent then
+				obj:PivotTo(orig)
+			end
+		end)
+	end
+	spinOriginals = {}
+	spinOffset = 0
+end
+
 local function scanViewport(v)
 	local opponent = isOpponentViewport(v)
 	if spinActive and opponent then
@@ -311,11 +323,14 @@ local function scanViewport(v)
 			end
 		end
 	else
-		for _, obj in pairs(v:GetDescendants()) do
-			if obj:IsA("Model") then
-				spinOriginals[obj] = nil
-			end
+		for obj, orig in pairs(spinOriginals) do
+			pcall(function()
+				if obj and obj.Parent then
+					obj:PivotTo(orig)
+				end
+			end)
 		end
+		spinOriginals = {}
 	end
 end
 
@@ -365,6 +380,9 @@ end)
 
 SpinBtn.MouseButton1Click:Connect(function()
 	spinActive = not spinActive
+	if not spinActive then
+		restoreSpin()
+	end
 	UpdateButtonStyle(SpinBtn, spinActive)
 end)
 
@@ -400,6 +418,9 @@ UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		UpdateButtonStyle(DisappearBtn, disappearActive)
 	elseif input.KeyCode == Enum.KeyCode.X then
 		spinActive = not spinActive
+		if not spinActive then
+			restoreSpin()
+		end
 		UpdateButtonStyle(SpinBtn, spinActive)
 	elseif input.KeyCode == Enum.KeyCode.One then
 		hydraActive = not hydraActive
