@@ -4,13 +4,11 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.12"
+local VERSION = "2.13"
 
-pcall(function()
-	if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
-		LocalPlayer.PlayerGui["FEGO"]:Destroy()
-	end
-end)
+if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
+	LocalPlayer.PlayerGui["FEGO"]:Destroy()
+end
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FEGO"
@@ -28,25 +26,14 @@ MainFrame.Draggable = true
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
 
-local MainCorner = Instance.new("UICorner")
-MainCorner.CornerRadius = UDim.new(0, 14)
-MainCorner.Parent = MainFrame
-
-local MainStroke = Instance.new("UIStroke")
-MainStroke.Color = Color3.fromRGB(120, 60, 200)
-MainStroke.Thickness = 1.5
-MainStroke.Transparency = 0.2
-MainStroke.Parent = MainFrame
+Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 14)
 
 local TitleBar = Instance.new("Frame")
 TitleBar.Size = UDim2.new(1, 0, 0, 36)
 TitleBar.BackgroundColor3 = Color3.fromRGB(10, 10, 14)
 TitleBar.BorderSizePixel = 0
 TitleBar.Parent = MainFrame
-
-local TitleCorner = Instance.new("UICorner")
-TitleCorner.CornerRadius = UDim.new(0, 14)
-TitleCorner.Parent = TitleBar
+Instance.new("UICorner", TitleBar).CornerRadius = UDim.new(0, 14)
 
 local TitleFix = Instance.new("Frame")
 TitleFix.Size = UDim2.new(1, 0, 0, 12)
@@ -64,16 +51,9 @@ TitleLabel.TextSize = 15
 TitleLabel.Font = Enum.Font.GothamBold
 TitleLabel.Parent = TitleBar
 
-local Divider = Instance.new("Frame")
-Divider.Size = UDim2.new(0.85, 0, 0, 1)
-Divider.Position = UDim2.new(0.075, 0, 0, 44)
-Divider.BackgroundColor3 = Color3.fromRGB(60, 30, 100)
-Divider.BorderSizePixel = 0
-Divider.Parent = MainFrame
-
 local TabMain = Instance.new("TextButton")
 TabMain.Size = UDim2.new(0.45, 0, 0, 28)
-TabMain.Position = UDim2.new(0.03, 0, 0, 50)
+TabMain.Position = UDim2.new(0.03, 0, 0, 44)
 TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
 TabMain.Text = "MAIN"
 TabMain.TextColor3 = Color3.new(1, 1, 1)
@@ -81,14 +61,11 @@ TabMain.Font = Enum.Font.GothamBold
 TabMain.TextSize = 13
 TabMain.AutoButtonColor = false
 TabMain.Parent = MainFrame
-
-local TabMainCorner = Instance.new("UICorner")
-TabMainCorner.CornerRadius = UDim.new(0, 8)
-TabMainCorner.Parent = TabMain
+Instance.new("UICorner", TabMain).CornerRadius = UDim.new(0, 8)
 
 local TabPets = Instance.new("TextButton")
 TabPets.Size = UDim2.new(0.45, 0, 0, 28)
-TabPets.Position = UDim2.new(0.52, 0, 0, 50)
+TabPets.Position = UDim2.new(0.52, 0, 0, 44)
 TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
 TabPets.Text = "PETS"
 TabPets.TextColor3 = Color3.fromRGB(200, 200, 210)
@@ -96,14 +73,11 @@ TabPets.Font = Enum.Font.GothamBold
 TabPets.TextSize = 13
 TabPets.AutoButtonColor = false
 TabPets.Parent = MainFrame
-
-local TabPetsCorner = Instance.new("UICorner")
-TabPetsCorner.CornerRadius = UDim.new(0, 8)
-TabPetsCorner.Parent = TabPets
+Instance.new("UICorner", TabPets).CornerRadius = UDim.new(0, 8)
 
 local ContentFrame = Instance.new("Frame")
-ContentFrame.Size = UDim2.new(1, 0, 1, -88)
-ContentFrame.Position = UDim2.new(0, 0, 0, 86)
+ContentFrame.Size = UDim2.new(1, 0, 1, -80)
+ContentFrame.Position = UDim2.new(0, 0, 0, 80)
 ContentFrame.BackgroundTransparency = 1
 ContentFrame.ClipsDescendants = true
 ContentFrame.Parent = MainFrame
@@ -119,286 +93,147 @@ PetsContent.BackgroundTransparency = 1
 PetsContent.Visible = false
 PetsContent.Parent = ContentFrame
 
-local function CreateButton(name, text, yPos, parent)
-	local Button = Instance.new("TextButton")
-	Button.Name = name
-	Button.Size = UDim2.new(0.86, 0, 0, 34)
-	Button.Position = UDim2.new(0.07, 0, 0, yPos)
-	Button.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
-	Button.Text = text
-	Button.TextColor3 = Color3.fromRGB(200, 200, 210)
-	Button.Font = Enum.Font.GothamSemibold
-	Button.TextSize = 12
-	Button.AutoButtonColor = false
-	Button.Parent = parent
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 8)
-	corner.Parent = Button
-	local stroke = Instance.new("UIStroke")
-	stroke.Color = Color3.fromRGB(50, 30, 80)
-	stroke.Thickness = 1
-	stroke.Parent = Button
-	return Button
+local function CreateButton(text, yPos, parent)
+	local b = Instance.new("TextButton")
+	b.Size = UDim2.new(0.86, 0, 0, 34)
+	b.Position = UDim2.new(0.07, 0, 0, yPos)
+	b.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
+	b.Text = text
+	b.TextColor3 = Color3.fromRGB(200, 200, 210)
+	b.Font = Enum.Font.GothamSemibold
+	b.TextSize = 12
+	b.AutoButtonColor = false
+	b.Parent = parent
+	Instance.new("UICorner", b).CornerRadius = UDim.new(0, 8)
+	return b
 end
 
-local FreezeBtn = CreateButton("FreezeBtn", "[Y] FREEZE  OFF", 0, MainContent)
-local DisappearBtn = CreateButton("DisappearBtn", "[G] DISAPPEAR  OFF", 42, MainContent)
-local SpinBtn = CreateButton("SpinBtn", "[X] SPIN  OFF", 84, MainContent)
-local FlipBtn = CreateButton("FlipBtn", "[B] FLIP  OFF", 126, MainContent)
+local FreezeBtn = CreateButton("[Y] FREEZE  OFF", 0, MainContent)
+local DisappearBtn = CreateButton("[G] DISAPPEAR  OFF", 42, MainContent)
+local SpinBtn = CreateButton("[X] SPIN  OFF", 84, MainContent)
+local FlipBtn = CreateButton("[B] FLIP  OFF", 126, MainContent)
 
-local HydraBtn = CreateButton("HydraBtn", "[1] HYDRA  OFF", 0, PetsContent)
-local CannelloniBtn = CreateButton("CannelloniBtn", "[2] DRAGON CANN.  OFF", 42, PetsContent)
-local GingerBtn = CreateButton("GingerBtn", "[3] GINGER GERAT  OFF", 84, PetsContent)
-local ColorsBtn = CreateButton("ColorsBtn", "[C] COLOURS  OFF", 126, PetsContent)
+local HydraBtn = CreateButton("[1] HYDRA  OFF", 0, PetsContent)
+local CannelloniBtn = CreateButton("[2] DRAGON CANN.  OFF", 42, PetsContent)
+local GingerBtn = CreateButton("[3] GINGER GERAT  OFF", 84, PetsContent)
+local ColorsBtn = CreateButton("[C] COLOURS  OFF", 126, PetsContent)
 
-local function UpdateButtonStyle(btn, active)
-	btn.Text = active and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
-	btn.BackgroundColor3 = active and Color3.fromRGB(30, 110, 50) or Color3.fromRGB(28, 28, 38)
-	btn.TextColor3 = active and Color3.fromRGB(180, 255, 180) or Color3.fromRGB(200, 200, 210)
+local function ToggleBtn(btn, state)
+	btn.Text = state and string.gsub(btn.Text, "OFF", "ON") or string.gsub(btn.Text, "ON", "OFF")
+	btn.BackgroundColor3 = state and Color3.fromRGB(30, 110, 50) or Color3.fromRGB(28, 28, 38)
+	btn.TextColor3 = state and Color3.fromRGB(180, 255, 180) or Color3.fromRGB(200, 200, 210)
 end
 
 TabMain.MouseButton1Click:Connect(function()
 	MainContent.Visible = true
 	PetsContent.Visible = false
 	TabMain.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
-	TabMain.TextColor3 = Color3.new(1, 1, 1)
 	TabPets.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
-	TabPets.TextColor3 = Color3.fromRGB(200, 200, 210)
 end)
 
 TabPets.MouseButton1Click:Connect(function()
 	MainContent.Visible = false
 	PetsContent.Visible = true
 	TabPets.BackgroundColor3 = Color3.fromRGB(80, 40, 140)
-	TabPets.TextColor3 = Color3.new(1, 1, 1)
 	TabMain.BackgroundColor3 = Color3.fromRGB(28, 28, 38)
-	TabMain.TextColor3 = Color3.fromRGB(200, 200, 210)
 end)
 
-local freezeActive = false
-local disappearActive = false
-local spinActive = false
-local flipActive = false
-local hydraActive = false
-local cannelloniActive = false
-local gingerActive = false
-local colorsActive = false
+local freezeOn = false
+local disappearOn = false
+local spinOn = false
+local flipOn = false
+local hydraOn = false
+local cannelloniOn = false
+local gingerOn = false
+local colorsOn = false
+local spinOffs = {}
+local flipOffs = {}
+local spinT = 0
+local colorT = 0
 
-local function matchesPet(obj, petName)
-	local success, result = pcall(function()
-		local name = string.lower(obj.Name)
-		if string.find(name, petName) then return true end
-		return false
-	end)
-	return success and result
-end
-
-local function setAllTransparency(obj, value)
-	pcall(function()
-		if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-			obj.LocalTransparencyModifier = value
-			obj.Transparency = value
-		elseif obj:IsA("Decal") or obj:IsA("Texture") then
-			obj.Transparency = value
-		end
-	end)
-end
-
-local function hideModel(obj)
-	setAllTransparency(obj, 1)
-	if obj:IsA("Model") then
-		for _, part in pairs(obj:GetDescendants()) do
-			setAllTransparency(part, 1)
-		end
-	end
-end
-
-local function shouldHide(obj)
-	if hydraActive and matchesPet(obj, "hydra") then return true end
-	if cannelloniActive and matchesPet(obj, "cannelloni") then return true end
-	if gingerActive and matchesPet(obj, "ginger gerat") then return true end
-	return false
-end
-
-local function isOpponentViewport(v)
-	local success, result = pcall(function()
-		local screenCenter = Camera.ViewportSize.X / 2
-		local vfCenter = v.AbsolutePosition.X + (v.AbsoluteSize.X / 2)
-		return vfCenter > screenCenter
-	end)
-	return success and result
-end
-
-local spinOriginals = {}
-local flipOriginals = {}
-local spinOffset = 0
-
-local function scanViewport(v)
-	local opponent = isOpponentViewport(v)
-	if spinActive and opponent then
-		spinOffset = spinOffset + 0.1
-	end
-	for _, obj in pairs(v:GetDescendants()) do
-		pcall(function()
-			if opponent and shouldHide(obj) then
-				hideModel(obj)
-			end
-			if disappearActive and opponent then
-				setAllTransparency(obj, 1)
-			end
-			if freezeActive and opponent then
-				if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-					obj.Anchored = true
-				end
-			end
-			if spinActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
-				if not spinOriginals[obj] then
-					spinOriginals[obj] = obj.CFrame
-				end
-				obj.CFrame = spinOriginals[obj] * CFrame.Angles(0, math.rad(spinOffset * 100), 0)
-			end
-			if flipActive and opponent and (obj:IsA("BasePart") or obj:IsA("MeshPart")) then
-				if not flipOriginals[obj] then
-					flipOriginals[obj] = obj.CFrame
-				end
-				obj.CFrame = flipOriginals[obj] * CFrame.Angles(math.rad(180), 0, 0)
-			end
-		end)
-	end
-	if not spinActive then
-		for obj, orig in pairs(spinOriginals) do
-			pcall(function() obj.CFrame = orig end)
-		end
-		spinOriginals = {}
-	end
-	if not flipActive then
-		for obj, orig in pairs(flipOriginals) do
-			pcall(function() obj.CFrame = orig end)
-		end
-		flipOriginals = {}
-	end
-end
-
-local colorOffset = 0
-
-local function applyColors(v)
-	if not colorsActive then return end
-	if not isOpponentViewport(v) then return end
-	colorOffset = colorOffset + 0.05
-	local rainbow = Color3.fromHSV(colorOffset % 1, 1, 1)
-	for _, obj in pairs(v:GetDescendants()) do
-		pcall(function()
-			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-				obj.Color = rainbow
-			end
-		end)
-	end
-end
-
-FreezeBtn.MouseButton1Click:Connect(function()
-	freezeActive = not freezeActive
-	UpdateButtonStyle(FreezeBtn, freezeActive)
-end)
-
-DisappearBtn.MouseButton1Click:Connect(function()
-	disappearActive = not disappearActive
-	UpdateButtonStyle(DisappearBtn, disappearActive)
-end)
+FreezeBtn.MouseButton1Click:Connect(function() freezeOn = not freezeOn; ToggleBtn(FreezeBtn, freezeOn) end)
+DisappearBtn.MouseButton1Click:Connect(function() disappearOn = not disappearOn; ToggleBtn(DisappearBtn, disappearOn) end)
+HydraBtn.MouseButton1Click:Connect(function() hydraOn = not hydraOn; ToggleBtn(HydraBtn, hydraOn) end)
+CannelloniBtn.MouseButton1Click:Connect(function() cannelloniOn = not cannelloniOn; ToggleBtn(CannelloniBtn, cannelloniOn) end)
+GingerBtn.MouseButton1Click:Connect(function() gingerOn = not gingerOn; ToggleBtn(GingerBtn, gingerOn) end)
+ColorsBtn.MouseButton1Click:Connect(function() colorsOn = not colorsOn; ToggleBtn(ColorsBtn, colorsOn) end)
 
 SpinBtn.MouseButton1Click:Connect(function()
-	spinActive = not spinActive
-	if not spinActive then
-		for obj, orig in pairs(spinOriginals) do
-			pcall(function() obj.CFrame = orig end)
-		end
-		spinOriginals = {}
-		spinOffset = 0
+	spinOn = not spinOn
+	if not spinOn then
+		for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end
+		spinOffs = {}
+		spinT = 0
 	end
-	UpdateButtonStyle(SpinBtn, spinActive)
+	ToggleBtn(SpinBtn, spinOn)
 end)
 
 FlipBtn.MouseButton1Click:Connect(function()
-	flipActive = not flipActive
-	if not flipActive then
-		for obj, orig in pairs(flipOriginals) do
-			pcall(function() obj.CFrame = orig end)
-		end
-		flipOriginals = {}
+	flipOn = not flipOn
+	if not flipOn then
+		for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end
+		flipOffs = {}
 	end
-	UpdateButtonStyle(FlipBtn, flipActive)
+	ToggleBtn(FlipBtn, flipOn)
 end)
 
-HydraBtn.MouseButton1Click:Connect(function()
-	hydraActive = not hydraActive
-	UpdateButtonStyle(HydraBtn, hydraActive)
-end)
-
-CannelloniBtn.MouseButton1Click:Connect(function()
-	cannelloniActive = not cannelloniActive
-	UpdateButtonStyle(CannelloniBtn, cannelloniActive)
-end)
-
-GingerBtn.MouseButton1Click:Connect(function()
-	gingerActive = not gingerActive
-	UpdateButtonStyle(GingerBtn, gingerActive)
-end)
-
-ColorsBtn.MouseButton1Click:Connect(function()
-	colorsActive = not colorsActive
-	UpdateButtonStyle(ColorsBtn, colorsActive)
-end)
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-	if gameProcessed then return end
-	if input.KeyCode == Enum.KeyCode.R then
-		MainFrame.Visible = not MainFrame.Visible
-	elseif input.KeyCode == Enum.KeyCode.Y then
-		freezeActive = not freezeActive
-		UpdateButtonStyle(FreezeBtn, freezeActive)
-	elseif input.KeyCode == Enum.KeyCode.G then
-		disappearActive = not disappearActive
-		UpdateButtonStyle(DisappearBtn, disappearActive)
-	elseif input.KeyCode == Enum.KeyCode.X then
-		spinActive = not spinActive
-		if not spinActive then
-			for obj, orig in pairs(spinOriginals) do
-				pcall(function() obj.CFrame = orig end)
-			end
-			spinOriginals = {}
-			spinOffset = 0
-		end
-		UpdateButtonStyle(SpinBtn, spinActive)
-	elseif input.KeyCode == Enum.KeyCode.B then
-		flipActive = not flipActive
-		if not flipActive then
-			for obj, orig in pairs(flipOriginals) do
-				pcall(function() obj.CFrame = orig end)
-			end
-			flipOriginals = {}
-		end
-		UpdateButtonStyle(FlipBtn, flipActive)
-	elseif input.KeyCode == Enum.KeyCode.One then
-		hydraActive = not hydraActive
-		UpdateButtonStyle(HydraBtn, hydraActive)
-	elseif input.KeyCode == Enum.KeyCode.Two then
-		cannelloniActive = not cannelloniActive
-		UpdateButtonStyle(CannelloniBtn, cannelloniActive)
-	elseif input.KeyCode == Enum.KeyCode.Three then
-		gingerActive = not gingerActive
-		UpdateButtonStyle(GingerBtn, gingerActive)
-	elseif input.KeyCode == Enum.KeyCode.C then
-		colorsActive = not colorsActive
-		UpdateButtonStyle(ColorsBtn, colorsActive)
+UserInputService.InputBegan:Connect(function(input, gpe)
+	if gpe then return end
+	local k = input.KeyCode
+	if k == Enum.KeyCode.R then MainFrame.Visible = not MainFrame.Visible
+	elseif k == Enum.KeyCode.Y then freezeOn = not freezeOn; ToggleBtn(FreezeBtn, freezeOn)
+	elseif k == Enum.KeyCode.G then disappearOn = not disappearOn; ToggleBtn(DisappearBtn, disappearOn)
+	elseif k == Enum.KeyCode.X then
+		spinOn = not spinOn
+		if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {}; spinT = 0 end
+		ToggleBtn(SpinBtn, spinOn)
+	elseif k == Enum.KeyCode.B then
+		flipOn = not flipOn
+		if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
+		ToggleBtn(FlipBtn, flipOn)
+	elseif k == Enum.KeyCode.One then hydraOn = not hydraOn; ToggleBtn(HydraBtn, hydraOn)
+	elseif k == Enum.KeyCode.Two then cannelloniOn = not cannelloniOn; ToggleBtn(CannelloniBtn, cannelloniOn)
+	elseif k == Enum.KeyCode.Three then gingerOn = not gingerOn; ToggleBtn(GingerBtn, gingerOn)
+	elseif k == Enum.KeyCode.C then colorsOn = not colorsOn; ToggleBtn(ColorsBtn, colorsOn)
 	end
 end)
 
 RunService.Heartbeat:Connect(function()
-	if freezeActive or disappearActive or spinActive or flipActive or colorsActive or hydraActive or cannelloniActive or gingerActive then
-		for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-			if v:IsA("ViewportFrame") then
-				scanViewport(v)
-				applyColors(v)
+	if not (freezeOn or disappearOn or spinOn or flipOn or colorsOn or hydraOn or cannelloniOn or gingerOn) then return end
+	for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+		if vf:IsA("ViewportFrame") then
+			local mid = Camera.ViewportSize.X / 2
+			local opp = (vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2) > mid
+			if spinOn and opp then spinT = spinT + 0.1 end
+			if colorsOn and opp then colorT = colorT + 0.05 end
+			for _, obj in pairs(vf:GetDescendants()) do
+				pcall(function()
+					local isPart = obj:IsA("BasePart") or obj:IsA("MeshPart")
+					local nm = string.lower(obj.Name)
+					local isHydra = hydraOn and string.find(nm, "hydra")
+					local isCann = cannelloniOn and string.find(nm, "cannelloni")
+					local isGing = gingerOn and string.find(nm, "ginger gerat")
+					local isPet = isHydra or isCann or isGing
+					if opp then
+						if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
+						if disappearOn and isPart then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
+						if freezeOn and isPart then obj.Anchored = true end
+						if spinOn and isPart then
+							if not spinOffs[obj] then spinOffs[obj] = obj.CFrame end
+							obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 100), 0)
+						end
+						if flipOn and isPart then
+							if not flipOffs[obj] then flipOffs[obj] = obj.CFrame end
+							obj.CFrame = flipOffs[obj] * CFrame.Angles(math.rad(180), 0, 0)
+						end
+						if colorsOn and isPart then
+							obj.Color = Color3.fromHSV(colorT % 1, 1, 1)
+						end
+					end
+				end)
 			end
+			if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {} end
+			if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 		end
 	end
 end)
