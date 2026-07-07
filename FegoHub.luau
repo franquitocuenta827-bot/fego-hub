@@ -4,6 +4,8 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
+local VERSION = "2.5"
+
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
 end
@@ -55,7 +57,7 @@ TitleFix.Parent = TitleBar
 local TitleLabel = Instance.new("TextLabel")
 TitleLabel.Size = UDim2.new(1, 0, 1, 0)
 TitleLabel.BackgroundTransparency = 1
-TitleLabel.Text = "FEGO HUB V2"
+TitleLabel.Text = "FEGO HUB v" .. VERSION
 TitleLabel.TextColor3 = Color3.fromRGB(170, 110, 255)
 TitleLabel.TextSize = 15
 TitleLabel.Font = Enum.Font.GothamBold
