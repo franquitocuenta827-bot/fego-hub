@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.10"
+local VERSION = "2.11"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -403,7 +403,7 @@ local function applyColors(v)
 end
 
 RunService.Heartbeat:Connect(function()
-	if isAnyPetActive() or disappearActive or freezeActive or colorsActive or spinActive then
+	if isAnyPetActive() or disappearActive or freezeActive or colorsActive or spinActive or flipActive then
 		for _, v in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
 			if v:IsA("ViewportFrame") then
 				scanViewport(v)
