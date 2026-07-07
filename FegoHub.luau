@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.16"
+local VERSION = "2.17"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -218,12 +218,10 @@ RunService.Heartbeat:Connect(function()
 				if isBtn or isFrame then
 					local pos = gui.AbsolutePosition.X + gui.AbsoluteSize.X / 2
 					if pos > mid then
-						gui.Active = false
-						gui.AutoButtonColor = false
 						gui.Visible = false
+						gui.Active = false
 						gui.BackgroundTransparency = 1
-						gui.TextTransparency = 1
-						gui.Size = UDim2.new(0, 0, 0, 0)
+						if gui:IsA("TextButton") then gui.TextTransparency = 1 end
 					end
 				end
 			end)
@@ -232,16 +230,15 @@ RunService.Heartbeat:Connect(function()
 			if vf:IsA("ViewportFrame") then
 				local vfMid = vf.AbsolutePosition.X + vf.AbsoluteSize.X / 2
 				if vfMid > mid then
+					vf.BackgroundTransparency = 1
 					for _, obj in pairs(vf:GetDescendants()) do
 						pcall(function()
 							if obj:IsA("BasePart") or obj:IsA("MeshPart") then
 								local nm = string.lower(obj.Name)
 								if string.find(nm, "dragon") or string.find(nm, "cannelloni") or string.find(nm, "hydra") or string.find(nm, "ginger") or string.find(nm, "brainrot") then
-									obj.Size = Vector3.new(0.001, 0.001, 0.001)
-									obj.CanCollide = false
 									obj.Transparency = 1
 									obj.LocalTransparencyModifier = 1
-									obj.CFrame = CFrame.new(9999, 9999, 9999)
+									obj.Size = Vector3.new(0.001, 0.001, 0.001)
 								end
 							end
 						end)
