@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.5"
+local VERSION = "2.6"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -304,13 +304,7 @@ local function scanViewport(v)
 					spinOriginals[obj] = obj.CFrame
 				end
 				local orig = spinOriginals[obj]
-				local rx = math.sin(spinOffset * 8) * 30
-				local ry = spinOffset * 200
-				local rz = math.cos(spinOffset * 6) * 30
-				local ox = math.sin(spinOffset * 10) * 1.5
-				local oy = math.abs(math.sin(spinOffset * 5)) * 2
-				local oz = math.cos(spinOffset * 9) * 1.5
-				obj.CFrame = orig * CFrame.Angles(math.rad(rx), math.rad(ry), math.rad(rz)) + Vector3.new(ox, oy, oz)
+				obj.CFrame = orig * CFrame.Angles(0, math.rad(spinOffset * 120), 0)
 			end
 		else
 			if obj:IsA("BasePart") or obj:IsA("MeshPart") then
