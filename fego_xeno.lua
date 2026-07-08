@@ -4,17 +4,25 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.25"
+local VERSION = "3.0"
 
-if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
-	LocalPlayer.PlayerGui["FEGO"]:Destroy()
-end
+pcall(function()
+	if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
+		LocalPlayer.PlayerGui["FEGO"]:Destroy()
+	end
+end)
 
 local ScreenGui = Instance.new("ScreenGui")
 ScreenGui.Name = "FEGO"
 ScreenGui.ResetOnSpawn = false
 ScreenGui.DisplayOrder = 9999
 ScreenGui.Parent = LocalPlayer.PlayerGui
+
+pcall(function()
+	if syn and syn.protect_gui then
+		syn.protect_gui(ScreenGui)
+	end
+end)
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Size = UDim2.new(0, 200, 0, 280)
@@ -25,7 +33,6 @@ MainFrame.Active = true
 MainFrame.Draggable = true
 MainFrame.Visible = false
 MainFrame.Parent = ScreenGui
-
 Instance.new("UICorner", MainFrame).CornerRadius = UDim.new(0, 14)
 
 local TitleBar = Instance.new("Frame")
@@ -208,126 +215,151 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 	end
 end)
 
+local function safeGetProperty(obj, prop)
+	local ok, val = pcall(function() return obj[prop] end)
+	return ok, val
+end
+
 local function isVisibleOpponent(obj)
-	local ok, pos = pcall(function()
-		return obj.AbsolutePosition.X + obj.AbsoluteSize.X / 2
-	end)
-	if not ok then return false end
+	local ok, x = safeGetProperty(obj, "AbsolutePosition")
+	if not ok or not x then return false end
+	local ok2, sx = safeGetProperty(obj, "AbsoluteSize")
+	if not ok2 or not sx then return false end
 	local mid = Camera.ViewportSize.X / 2
-	return pos > mid
+	return (x.X + sx.X / 2) > mid
 end
 
 local function hasText(obj, keyword)
-	local ok1, txt = pcall(function() return string.lower(obj.Text) end)
-	if ok1 and txt and string.find(txt, keyword) then return true end
-	local ok2, nm = pcall(function() return string.lower(obj.Name) end)
-	if ok2 and nm and string.find(nm, keyword) then return true end
+	local ok1, txt = safeGetProperty(obj, "Text")
+	if ok1 and txt then
+		local s, e = pcall(function() return string.lower(txt) end)
+		if s and e and string.find(e, keyword) then return true end
+	end
+	local ok2, nm = safeGetProperty(obj, "Name")
+	if ok2 and nm then
+		local s, e = pcall(function() return string.lower(nm) end)
+		if s and e and string.find(e, keyword) then return true end
+	end
 	return false
 end
 
-local function findTextInDescendants(parent, keyword)
-	for _, child in pairs(parent:GetDescendants()) do
-		local ok, txt = pcall(function() return string.lower(child.Text) end)
-		if ok and txt and string.find(txt, keyword) then return child end
-		local ok2, nm = pcall(function() return string.lower(child.Name) end)
-		if ok2 and nm and string.find(nm, keyword) then return child end
-	end
-	return nil
+local function safeGetDescendants(obj)
+	local ok, desc = pcall(function() return obj:GetDescendants() end)
+	if ok and desc then return desc end
+	return {}
 end
 
-RunService.Heartbeat:Connect(function()
-	pcall(function()
-		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-			if vf:IsA("ViewportFrame") then
-				if isVisibleOpponent(vf) then
-					vf.BackgroundTransparency = 1
+local function safeIsA(obj, className)
+	local ok, res = pcall(function() return obj:IsA(className) end)
+	return ok and res
+end
+
+local function hideOpponentViewportFrames()
+	local ok, desc = pcall(function() return LocalPlayer.PlayerGui:GetDescendants() end)
+	if not ok then return end
+	for _, vf in pairs(desc) do
+		if safeIsA(vf, "ViewportFrame") then
+			if isVisibleOpponent(vf) then
+				pcall(function() vf.BackgroundTransparency = 1 end)
+				local vfDesc = safeGetDescendants(vf)
+				for _, obj in pairs(vfDesc) do
+					pcall(function()
+						if safeIsA(obj, "BasePart") or safeIsA(obj, "MeshPart") then
+							obj.Transparency = 1
+							obj.LocalTransparencyModifier = 1
+							obj.Size = Vector3.new(0.001, 0.001, 0.001)
+						end
+					end)
 				end
 			end
 		end
-		if destructOn then
-			for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-				pcall(function()
-					if gui:IsA("GuiButton") then
-						if hasText(gui, "aceptar") or hasText(gui, "cancel") or hasText(gui, "listo") or hasText(gui, "ready") or hasText(gui, "accept") then
-							gui.Visible = false
-							gui.Active = false
-							gui.BackgroundTransparency = 1
-							gui.Size = UDim2.new(0, 0, 0, 0)
-							if gui:IsA("TextButton") then
-								gui.TextTransparency = 1
+	end
+end
+
+local function processViewportFrames()
+	local ok, desc = pcall(function() return LocalPlayer.PlayerGui:GetDescendants() end)
+	if not ok then return end
+	for _, vf in pairs(desc) do
+		if safeIsA(vf, "ViewportFrame") then
+			local opp = isVisibleOpponent(vf)
+			if opp then
+				if disappearOn then
+					pcall(function() vf.BackgroundTransparency = 1 end)
+					local vfDesc = safeGetDescendants(vf)
+					for _, obj in pairs(vfDesc) do
+						pcall(function()
+							if safeIsA(obj, "BasePart") or safeIsA(obj, "MeshPart") then
+								obj.Transparency = 1
+								obj.LocalTransparencyModifier = 1
 							end
+							if safeIsA(obj, "Decal") or safeIsA(obj, "Texture") then
+								obj.Transparency = 1
+							end
+						end)
+					end
+				end
+			end
+			if opp then
+				if freezeOn then spinT = spinT + 0.1 end
+				if colorsOn then colorT = colorT + 0.05 end
+			end
+			local vfDesc = safeGetDescendants(vf)
+			for _, obj in pairs(vfDesc) do
+				pcall(function()
+					local isPart = safeIsA(obj, "BasePart") or safeIsA(obj, "MeshPart")
+					local nm = string.lower(obj.Name)
+					local isHydra = hydraOn and string.find(nm, "hydra")
+					local isCann = cannelloniOn and string.find(nm, "cannelloni")
+					local isGing = gingerOn and string.find(nm, "ginger gerat")
+					local isPet = isHydra or isCann or isGing
+					if opp then
+						if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
+						if not disappearOn and freezeOn and isPart then obj.Anchored = true end
+						if spinOn and isPart then
+							if not spinOffs[obj] then spinOffs[obj] = obj.CFrame end
+							obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 100), 0)
+						end
+						if flipOn and isPart then
+							if not flipOffs[obj] then flipOffs[obj] = obj.CFrame end
+							obj.CFrame = flipOffs[obj] * CFrame.Angles(math.rad(180), 0, 0)
+						end
+						if colorsOn and isPart then
+							obj.Color = Color3.fromHSV(colorT % 1, 1, 1)
 						end
 					end
 				end)
 			end
-			for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-				if vf:IsA("ViewportFrame") then
-					if isVisibleOpponent(vf) then
-						vf.BackgroundTransparency = 1
-						for _, obj in pairs(vf:GetDescendants()) do
-							pcall(function()
-								if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-									obj.Transparency = 1
-									obj.LocalTransparencyModifier = 1
-									obj.Size = Vector3.new(0.001, 0.001, 0.001)
-								end
-							end)
-						end
-					end
-				end
-			end
+			if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {} end
+			if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 		end
-		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-			if vf:IsA("ViewportFrame") then
-				local opp = isVisibleOpponent(vf)
-				if opp then
-					if disappearOn then
-						vf.BackgroundTransparency = 1
-						for _, obj in pairs(vf:GetDescendants()) do
-							pcall(function()
-								if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-									obj.Transparency = 1
-									obj.LocalTransparencyModifier = 1
-								end
-								if obj:IsA("Decal") or obj:IsA("Texture") then
-									obj.Transparency = 1
-								end
-							end)
-						end
-					end
-				end
-				if opp then
-					if freezeOn then spinT = spinT + 0.1 end
-					if colorsOn then colorT = colorT + 0.05 end
-				end
-				for _, obj in pairs(vf:GetDescendants()) do
+	end
+end
+
+RunService.Heartbeat:Connect(function()
+	pcall(function()
+		hideOpponentViewportFrames()
+
+		if destructOn then
+			local ok, desc = pcall(function() return LocalPlayer.PlayerGui:GetDescendants() end)
+			if ok then
+				for _, gui in pairs(desc) do
 					pcall(function()
-						local isPart = obj:IsA("BasePart") or obj:IsA("MeshPart")
-						local nm = string.lower(obj.Name)
-						local isHydra = hydraOn and string.find(nm, "hydra")
-						local isCann = cannelloniOn and string.find(nm, "cannelloni")
-						local isGing = gingerOn and string.find(nm, "ginger gerat")
-						local isPet = isHydra or isCann or isGing
-						if opp then
-							if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
-							if not disappearOn and freezeOn and isPart then obj.Anchored = true end
-							if spinOn and isPart then
-								if not spinOffs[obj] then spinOffs[obj] = obj.CFrame end
-								obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 100), 0)
-							end
-							if flipOn and isPart then
-								if not flipOffs[obj] then flipOffs[obj] = obj.CFrame end
-								obj.CFrame = flipOffs[obj] * CFrame.Angles(math.rad(180), 0, 0)
-							end
-							if colorsOn and isPart then
-								obj.Color = Color3.fromHSV(colorT % 1, 1, 1)
+						if safeIsA(gui, "GuiButton") then
+							if hasText(gui, "aceptar") or hasText(gui, "cancel") or hasText(gui, "listo") or hasText(gui, "ready") or hasText(gui, "accept") then
+								gui.Visible = false
+								gui.Active = false
+								gui.BackgroundTransparency = 1
+								gui.Size = UDim2.new(0, 0, 0, 0)
+								if safeIsA(gui, "TextButton") then
+									gui.TextTransparency = 1
+								end
 							end
 						end
 					end)
 				end
-				if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {} end
-				if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 			end
 		end
+
+		processViewportFrames()
 	end)
 end)
