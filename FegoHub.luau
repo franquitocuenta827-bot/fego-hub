@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "3.0"
+local VERSION = "3.1"
 
 pcall(function()
 	if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
@@ -254,37 +254,50 @@ local function safeIsA(obj, className)
 	return ok and res
 end
 
-local function hideOpponentViewportFrames()
+local tradeOpen = false
+local lastCheck = 0
+
+local function isTradeOpen()
 	local ok, desc = pcall(function() return LocalPlayer.PlayerGui:GetDescendants() end)
-	if not ok then return end
-	for _, vf in pairs(desc) do
-		if safeIsA(vf, "ViewportFrame") then
-			if isVisibleOpponent(vf) then
-				pcall(function() vf.BackgroundTransparency = 1 end)
-				local vfDesc = safeGetDescendants(vf)
-				for _, obj in pairs(vfDesc) do
-					pcall(function()
-						if safeIsA(obj, "BasePart") or safeIsA(obj, "MeshPart") then
-							obj.Transparency = 1
-							obj.LocalTransparencyModifier = 1
-							obj.Size = Vector3.new(0.001, 0.001, 0.001)
-						end
-					end)
-				end
+	if not ok then return false end
+	for _, gui in pairs(desc) do
+		if safeIsA(gui, "GuiButton") then
+			if hasText(gui, "aceptar") or hasText(gui, "cancel") or hasText(gui, "listo") or hasText(gui, "accept") then
+				return true
 			end
 		end
 	end
+	return false
 end
 
-local function processViewportFrames()
+local function processAll()
 	local ok, desc = pcall(function() return LocalPlayer.PlayerGui:GetDescendants() end)
 	if not ok then return end
+
+	if destructOn then
+		for _, gui in pairs(desc) do
+			pcall(function()
+				if safeIsA(gui, "GuiButton") then
+					if hasText(gui, "aceptar") or hasText(gui, "cancel") or hasText(gui, "listo") or hasText(gui, "ready") or hasText(gui, "accept") then
+						gui.Visible = false
+						gui.Active = false
+						gui.BackgroundTransparency = 1
+						gui.Size = UDim2.new(0, 0, 0, 0)
+						if safeIsA(gui, "TextButton") then
+							gui.TextTransparency = 1
+						end
+					end
+				end
+			end)
+		end
+	end
+
 	for _, vf in pairs(desc) do
 		if safeIsA(vf, "ViewportFrame") then
 			local opp = isVisibleOpponent(vf)
 			if opp then
+				pcall(function() vf.BackgroundTransparency = 1 end)
 				if disappearOn then
-					pcall(function() vf.BackgroundTransparency = 1 end)
 					local vfDesc = safeGetDescendants(vf)
 					for _, obj in pairs(vfDesc) do
 						pcall(function()
@@ -298,21 +311,19 @@ local function processViewportFrames()
 						end)
 					end
 				end
-			end
-			if opp then
-				if freezeOn then spinT = spinT + 0.1 end
-				if colorsOn then colorT = colorT + 0.05 end
-			end
-			local vfDesc = safeGetDescendants(vf)
-			for _, obj in pairs(vfDesc) do
-				pcall(function()
-					local isPart = safeIsA(obj, "BasePart") or safeIsA(obj, "MeshPart")
-					local nm = string.lower(obj.Name)
-					local isHydra = hydraOn and string.find(nm, "hydra")
-					local isCann = cannelloniOn and string.find(nm, "cannelloni")
-					local isGing = gingerOn and string.find(nm, "ginger gerat")
-					local isPet = isHydra or isCann or isGing
-					if opp then
+				if opp then
+					if freezeOn then spinT = spinT + 0.1 end
+					if colorsOn then colorT = colorT + 0.05 end
+				end
+				local vfDesc = safeGetDescendants(vf)
+				for _, obj in pairs(vfDesc) do
+					pcall(function()
+						local isPart = safeIsA(obj, "BasePart") or safeIsA(obj, "MeshPart")
+						local nm = string.lower(obj.Name)
+						local isHydra = hydraOn and string.find(nm, "hydra")
+						local isCann = cannelloniOn and string.find(nm, "cannelloni")
+						local isGing = gingerOn and string.find(nm, "ginger gerat")
+						local isPet = isHydra or isCann or isGing
 						if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
 						if not disappearOn and freezeOn and isPart then obj.Anchored = true end
 						if spinOn and isPart then
@@ -326,40 +337,26 @@ local function processViewportFrames()
 						if colorsOn and isPart then
 							obj.Color = Color3.fromHSV(colorT % 1, 1, 1)
 						end
-					end
-				end)
+					end)
+				end
+				if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {} end
+				if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 			end
-			if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {} end
-			if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 		end
 	end
 end
 
 RunService.Heartbeat:Connect(function()
 	pcall(function()
-		hideOpponentViewportFrames()
+		local now = tick()
 
-		if destructOn then
-			local ok, desc = pcall(function() return LocalPlayer.PlayerGui:GetDescendants() end)
-			if ok then
-				for _, gui in pairs(desc) do
-					pcall(function()
-						if safeIsA(gui, "GuiButton") then
-							if hasText(gui, "aceptar") or hasText(gui, "cancel") or hasText(gui, "listo") or hasText(gui, "ready") or hasText(gui, "accept") then
-								gui.Visible = false
-								gui.Active = false
-								gui.BackgroundTransparency = 1
-								gui.Size = UDim2.new(0, 0, 0, 0)
-								if safeIsA(gui, "TextButton") then
-									gui.TextTransparency = 1
-								end
-							end
-						end
-					end)
-				end
-			end
+		if (now - lastCheck) > 0.5 then
+			lastCheck = now
+			tradeOpen = isTradeOpen()
 		end
 
-		processViewportFrames()
+		if tradeOpen or destructOn or hydraOn or cannelloniOn or gingerOn then
+			processAll()
+		end
 	end)
 end)
