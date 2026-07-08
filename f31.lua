@@ -311,10 +311,8 @@ local function processAll()
 						end)
 					end
 				end
-				if opp then
-					if freezeOn then spinT = spinT + 0.1 end
-					if colorsOn then colorT = colorT + 0.05 end
-				end
+				if freezeOn then spinT = spinT + 0.1 end
+				if colorsOn then colorT = colorT + 0.05 end
 				local vfDesc = safeGetDescendants(vf)
 				for _, obj in pairs(vfDesc) do
 					pcall(function()
