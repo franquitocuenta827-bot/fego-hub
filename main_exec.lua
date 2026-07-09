@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.25"
+local VERSION = "2.31"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -270,93 +270,69 @@ RunService.Heartbeat:Connect(function()
 				local opp = isVisibleOpponent(vf)
 				if opp then
 					if disappearOn then
-						vf.BackgroundTransparency = 1
+						vf.Visible = false
+					else
+						vf.Visible = true
+					end
+
+					if hydraOn or cannelloniOn or gingerOn then
+						local parent = vf.Parent
+						if parent and parent:IsA("Frame") then
+							if cannelloniOn then
+								parent.Visible = false
+							elseif hydraOn then
+								parent.Visible = false
+							elseif gingerOn then
+								parent.Visible = false
+							end
+						else
+							vf.Visible = false
+						end
+					end
+
+					if freezeOn or spinOn or flipOn or colorsOn then
+						if spinOn then spinT = spinT + 0.1 end
+						if colorsOn then colorT = colorT + 0.05 end
+
 						for _, obj in pairs(vf:GetDescendants()) do
 							pcall(function()
-								if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-									obj.Transparency = 1
-									obj.LocalTransparencyModifier = 1
+								if not (obj:IsA("BasePart") or obj:IsA("MeshPart")) then return end
+
+								if freezeOn then
+									pcall(function() obj:BreakJoints() end)
+									obj.Anchored = true
+									obj.CanCollide = false
+									obj.Velocity = Vector3.new(0, 0, 0)
+									obj.RotVelocity = Vector3.new(0, 0, 0)
 								end
-								if obj:IsA("Decal") or obj:IsA("Texture") then
-									obj.Transparency = 1
+
+								if spinOn then
+									if not spinOffs[obj] then
+										spinOffs[obj] = obj.CFrame
+									end
+									obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 200), 0)
+								end
+
+								if flipOn then
+									if not flipOffs[obj] then
+										flipOffs[obj] = obj.CFrame
+									end
+									obj.CFrame = flipOffs[obj] * CFrame.Angles(math.rad(180), 0, 0)
+								end
+
+								if colorsOn then
+									obj.Color = Color3.fromHSV(colorT % 1, 1, 1)
 								end
 							end)
 						end
 					end
 
-					if spinOn then spinT = spinT + 0.1 end
-					if colorsOn then colorT = colorT + 0.05 end
-
-					for _, obj in pairs(vf:GetDescendants()) do
-						pcall(function()
-							local isPart = obj:IsA("BasePart") or obj:IsA("MeshPart")
-							if not isPart then return end
-
-							local nm = string.lower(obj.Name)
-
-							if disappearOn then
-								obj.Transparency = 1
-								obj.LocalTransparencyModifier = 1
-							end
-
-							if hydraOn and string.find(nm, "hydra") then
-								obj.Transparency = 1
-								obj.LocalTransparencyModifier = 1
-							end
-
-							if cannelloniOn and (string.find(nm, "cannelloni") or string.find(nm, "dragon") or string.find(nm, "pet")) then
-								obj.Transparency = 1
-								obj.LocalTransparencyModifier = 1
-							end
-
-							if gingerOn and (string.find(nm, "ginger") or string.find(nm, "brainrot") or string.find(nm, "galleta") or string.find(nm, "cookie") or string.find(nm, "pet")) then
-								obj.Transparency = 1
-								obj.LocalTransparencyModifier = 1
-							end
-
-							if freezeOn then
-								obj.Anchored = true
-								obj.CanCollide = false
-								obj.Velocity = Vector3.new(0, 0, 0)
-								obj.RotVelocity = Vector3.new(0, 0, 0)
-							end
-
-							if spinOn then
-								if not spinOffs[obj] then
-									spinOffs[obj] = {
-										cf = obj.CFrame,
-										pos = obj.Position,
-										size = obj.Size,
-									}
-								end
-								local base = spinOffs[obj].cf
-								obj.CFrame = base * CFrame.Angles(0, math.rad(spinT * 200), 0)
-							end
-
-							if flipOn then
-								if not flipOffs[obj] then
-									flipOffs[obj] = {
-										cf = obj.CFrame,
-										pos = obj.Position,
-										size = obj.Size,
-									}
-								end
-								local base = flipOffs[obj].cf
-								obj.CFrame = base * CFrame.Angles(math.rad(180), 0, 0)
-							end
-
-							if colorsOn then
-								obj.Color = Color3.fromHSV(colorT % 1, 1, 1)
-							end
-						end)
-					end
-
 					if not spinOn then
-						for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c.cf end) end
+						for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end
 						spinOffs = {}
 					end
 					if not flipOn then
-						for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c.cf end) end
+						for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end
 						flipOffs = {}
 					end
 				end
