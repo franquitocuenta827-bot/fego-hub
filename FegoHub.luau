@@ -4,7 +4,7 @@ local RunService = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local Camera = workspace.CurrentCamera
 
-local VERSION = "2.31"
+local VERSION = "2.32"
 
 if LocalPlayer.PlayerGui:FindFirstChild("FEGO") then
 	LocalPlayer.PlayerGui["FEGO"]:Destroy()
@@ -163,7 +163,7 @@ ColorsBtn.MouseButton1Click:Connect(function() colorsOn = not colorsOn; ToggleBt
 SpinBtn.MouseButton1Click:Connect(function()
 	spinOn = not spinOn
 	if not spinOn then
-		for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c.cf end) end
+		for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end
 		spinOffs = {}
 		spinT = 0
 	end
@@ -173,7 +173,7 @@ end)
 FlipBtn.MouseButton1Click:Connect(function()
 	flipOn = not flipOn
 	if not flipOn then
-		for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c.cf end) end
+		for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end
 		flipOffs = {}
 	end
 	ToggleBtn(FlipBtn, flipOn)
@@ -192,11 +192,11 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 	elseif k == Enum.KeyCode.G then disappearOn = not disappearOn; ToggleBtn(DisappearBtn, disappearOn)
 	elseif k == Enum.KeyCode.X then
 		spinOn = not spinOn
-		if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c.cf end) end; spinOffs = {}; spinT = 0 end
+		if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {}; spinT = 0 end
 		ToggleBtn(SpinBtn, spinOn)
 	elseif k == Enum.KeyCode.B then
 		flipOn = not flipOn
-		if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c.cf end) end; flipOffs = {} end
+		if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 		ToggleBtn(FlipBtn, flipOn)
 	elseif k == Enum.KeyCode.V then
 		destructOn = not destructOn
