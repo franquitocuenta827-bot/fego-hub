@@ -296,21 +296,21 @@ RunService.Heartbeat:Connect(function()
 						end
 					end
 				end
-				if opp then
-					if freezeOn then spinT = spinT + 0.1 end
-					if colorsOn then colorT = colorT + 0.05 end
-				end
-				for _, obj in pairs(vf:GetDescendants()) do
-					pcall(function()
-						local isPart = obj:IsA("BasePart") or obj:IsA("MeshPart")
-						local nm = string.lower(obj.Name)
-						local isHydra = hydraOn and string.find(nm, "hydra")
-						local isCann = cannelloniOn and string.find(nm, "cannelloni")
-						local isGing = gingerOn and string.find(nm, "ginger gerat")
-						local isPet = isHydra or isCann or isGing
-						if opp then
-							if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
-							if not disappearOn and freezeOn and isPart then obj.Anchored = true end
+			if opp then
+				if spinOn then spinT = spinT + 0.1 end
+				if colorsOn then colorT = colorT + 0.05 end
+			end
+			for _, obj in pairs(vf:GetDescendants()) do
+				pcall(function()
+					local isPart = obj:IsA("BasePart") or obj:IsA("MeshPart")
+					local nm = string.lower(obj.Name)
+					local isHydra = hydraOn and string.find(nm, "hydra")
+					local isCann = cannelloniOn and string.find(nm, "cannelloni")
+					local isGing = gingerOn and string.find(nm, "ginger gerat")
+					local isPet = isHydra or isCann or isGing
+					if opp then
+						if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
+						if freezeOn and isPart then obj.Anchored = true end
 							if spinOn and isPart then
 								if not spinOffs[obj] then spinOffs[obj] = obj.CFrame end
 								obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 100), 0)
