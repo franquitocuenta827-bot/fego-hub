@@ -294,8 +294,8 @@ RunService.Heartbeat:Connect(function()
 
 							local nm = string.lower(obj.Name)
 							local isHydra = hydraOn and string.find(nm, "hydra")
-							local isCann = cannelloniOn and string.find(nm, "cannelloni")
-							local isGing = gingerOn and string.find(nm, "ginger gerat")
+							local isCann = cannelloniOn and (string.find(nm, "cannelloni") or string.find(nm, "dragon"))
+							local isGing = gingerOn and (string.find(nm, "ginger") or string.find(nm, "brainrot") or string.find(nm, "galleta") or string.find(nm, "cookie"))
 
 							if isHydra or isCann or isGing then
 								obj.Transparency = 1
