@@ -163,7 +163,7 @@ ColorsBtn.MouseButton1Click:Connect(function() colorsOn = not colorsOn; ToggleBt
 SpinBtn.MouseButton1Click:Connect(function()
 	spinOn = not spinOn
 	if not spinOn then
-		for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end
+		for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c.cf end) end
 		spinOffs = {}
 		spinT = 0
 	end
@@ -173,7 +173,7 @@ end)
 FlipBtn.MouseButton1Click:Connect(function()
 	flipOn = not flipOn
 	if not flipOn then
-		for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end
+		for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c.cf end) end
 		flipOffs = {}
 	end
 	ToggleBtn(FlipBtn, flipOn)
@@ -192,11 +192,11 @@ UserInputService.InputBegan:Connect(function(input, gpe)
 	elseif k == Enum.KeyCode.G then disappearOn = not disappearOn; ToggleBtn(DisappearBtn, disappearOn)
 	elseif k == Enum.KeyCode.X then
 		spinOn = not spinOn
-		if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {}; spinT = 0 end
+		if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c.cf end) end; spinOffs = {}; spinT = 0 end
 		ToggleBtn(SpinBtn, spinOn)
 	elseif k == Enum.KeyCode.B then
 		flipOn = not flipOn
-		if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
+		if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c.cf end) end; flipOffs = {} end
 		ToggleBtn(FlipBtn, flipOn)
 	elseif k == Enum.KeyCode.V then
 		destructOn = not destructOn
@@ -305,16 +305,33 @@ RunService.Heartbeat:Connect(function()
 							if freezeOn then
 								obj.Anchored = true
 								obj.CanCollide = false
+								if not spinOn then
+									obj.CFrame = obj.CFrame
+								end
 							end
 
 							if spinOn then
-								if not spinOffs[obj] then spinOffs[obj] = obj.CFrame end
-								obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 100), 0)
+								if not spinOffs[obj] then
+									spinOffs[obj] = {
+										cf = obj.CFrame,
+										pos = obj.Position,
+										size = obj.Size,
+									}
+								end
+								local base = spinOffs[obj].cf
+								obj.CFrame = base * CFrame.Angles(0, math.rad(spinT * 200), 0)
 							end
 
 							if flipOn then
-								if not flipOffs[obj] then flipOffs[obj] = obj.CFrame end
-								obj.CFrame = flipOffs[obj] * CFrame.Angles(math.rad(180), 0, 0)
+								if not flipOffs[obj] then
+									flipOffs[obj] = {
+										cf = obj.CFrame,
+										pos = obj.Position,
+										size = obj.Size,
+									}
+								end
+								local base = flipOffs[obj].cf
+								obj.CFrame = base * CFrame.Angles(math.rad(180), 0, 0)
 							end
 
 							if colorsOn then
@@ -324,11 +341,11 @@ RunService.Heartbeat:Connect(function()
 					end
 
 					if not spinOn then
-						for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end
+						for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c.cf end) end
 						spinOffs = {}
 					end
 					if not flipOn then
-						for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end
+						for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c.cf end) end
 						flipOffs = {}
 					end
 				end
