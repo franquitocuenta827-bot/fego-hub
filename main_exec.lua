@@ -293,11 +293,23 @@ RunService.Heartbeat:Connect(function()
 							if not isPart then return end
 
 							local nm = string.lower(obj.Name)
-							local isHydra = hydraOn and string.find(nm, "hydra")
-							local isCann = cannelloniOn and (string.find(nm, "cannelloni") or string.find(nm, "dragon"))
-							local isGing = gingerOn and (string.find(nm, "ginger") or string.find(nm, "brainrot") or string.find(nm, "galleta") or string.find(nm, "cookie"))
 
-							if isHydra or isCann or isGing then
+							if disappearOn then
+								obj.Transparency = 1
+								obj.LocalTransparencyModifier = 1
+							end
+
+							if hydraOn and string.find(nm, "hydra") then
+								obj.Transparency = 1
+								obj.LocalTransparencyModifier = 1
+							end
+
+							if cannelloniOn and (string.find(nm, "cannelloni") or string.find(nm, "dragon") or string.find(nm, "pet")) then
+								obj.Transparency = 1
+								obj.LocalTransparencyModifier = 1
+							end
+
+							if gingerOn and (string.find(nm, "ginger") or string.find(nm, "brainrot") or string.find(nm, "galleta") or string.find(nm, "cookie") or string.find(nm, "pet")) then
 								obj.Transparency = 1
 								obj.LocalTransparencyModifier = 1
 							end
@@ -305,9 +317,8 @@ RunService.Heartbeat:Connect(function()
 							if freezeOn then
 								obj.Anchored = true
 								obj.CanCollide = false
-								if not spinOn then
-									obj.CFrame = obj.CFrame
-								end
+								obj.Velocity = Vector3.new(0, 0, 0)
+								obj.RotVelocity = Vector3.new(0, 0, 0)
 							end
 
 							if spinOn then
