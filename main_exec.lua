@@ -237,15 +237,18 @@ end
 
 RunService.Heartbeat:Connect(function()
 	pcall(function()
-		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+		local desc = LocalPlayer.PlayerGui:GetDescendants()
+
+		for _, vf in pairs(desc) do
 			if vf:IsA("ViewportFrame") then
 				if isVisibleOpponent(vf) then
 					vf.BackgroundTransparency = 1
 				end
 			end
 		end
+
 		if destructOn then
-			for _, gui in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+			for _, gui in pairs(desc) do
 				pcall(function()
 					if gui:IsA("GuiButton") then
 						if hasText(gui, "aceptar") or hasText(gui, "cancel") or hasText(gui, "listo") or hasText(gui, "ready") or hasText(gui, "accept") then
@@ -260,24 +263,9 @@ RunService.Heartbeat:Connect(function()
 					end
 				end)
 			end
-			for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
-				if vf:IsA("ViewportFrame") then
-					if isVisibleOpponent(vf) then
-						vf.BackgroundTransparency = 1
-						for _, obj in pairs(vf:GetDescendants()) do
-							pcall(function()
-								if obj:IsA("BasePart") or obj:IsA("MeshPart") then
-									obj.Transparency = 1
-									obj.LocalTransparencyModifier = 1
-									obj.Size = Vector3.new(0.001, 0.001, 0.001)
-								end
-							end)
-						end
-					end
-				end
-			end
 		end
-		for _, vf in pairs(LocalPlayer.PlayerGui:GetDescendants()) do
+
+		for _, vf in pairs(desc) do
 			if vf:IsA("ViewportFrame") then
 				local opp = isVisibleOpponent(vf)
 				if opp then
@@ -295,38 +283,55 @@ RunService.Heartbeat:Connect(function()
 							end)
 						end
 					end
-				end
-			if opp then
-				if spinOn then spinT = spinT + 0.1 end
-				if colorsOn then colorT = colorT + 0.05 end
-			end
-			for _, obj in pairs(vf:GetDescendants()) do
-				pcall(function()
-					local isPart = obj:IsA("BasePart") or obj:IsA("MeshPart")
-					local nm = string.lower(obj.Name)
-					local isHydra = hydraOn and string.find(nm, "hydra")
-					local isCann = cannelloniOn and string.find(nm, "cannelloni")
-					local isGing = gingerOn and string.find(nm, "ginger gerat")
-					local isPet = isHydra or isCann or isGing
-					if opp then
-						if isPet then obj.Transparency = 1; obj.LocalTransparencyModifier = 1 end
-						if freezeOn and isPart then obj.Anchored = true end
-							if spinOn and isPart then
+
+					if spinOn then spinT = spinT + 0.1 end
+					if colorsOn then colorT = colorT + 0.05 end
+
+					for _, obj in pairs(vf:GetDescendants()) do
+						pcall(function()
+							local isPart = obj:IsA("BasePart") or obj:IsA("MeshPart")
+							if not isPart then return end
+
+							local nm = string.lower(obj.Name)
+							local isHydra = hydraOn and string.find(nm, "hydra")
+							local isCann = cannelloniOn and string.find(nm, "cannelloni")
+							local isGing = gingerOn and string.find(nm, "ginger gerat")
+
+							if isHydra or isCann or isGing then
+								obj.Transparency = 1
+								obj.LocalTransparencyModifier = 1
+							end
+
+							if freezeOn then
+								obj.Anchored = true
+								obj.CanCollide = false
+							end
+
+							if spinOn then
 								if not spinOffs[obj] then spinOffs[obj] = obj.CFrame end
 								obj.CFrame = spinOffs[obj] * CFrame.Angles(0, math.rad(spinT * 100), 0)
 							end
-							if flipOn and isPart then
+
+							if flipOn then
 								if not flipOffs[obj] then flipOffs[obj] = obj.CFrame end
 								obj.CFrame = flipOffs[obj] * CFrame.Angles(math.rad(180), 0, 0)
 							end
-							if colorsOn and isPart then
+
+							if colorsOn then
 								obj.Color = Color3.fromHSV(colorT % 1, 1, 1)
 							end
-						end
-					end)
+						end)
+					end
+
+					if not spinOn then
+						for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end
+						spinOffs = {}
+					end
+					if not flipOn then
+						for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end
+						flipOffs = {}
+					end
 				end
-				if not spinOn then for o, c in pairs(spinOffs) do pcall(function() o.CFrame = c end) end; spinOffs = {} end
-				if not flipOn then for o, c in pairs(flipOffs) do pcall(function() o.CFrame = c end) end; flipOffs = {} end
 			end
 		end
 	end)
